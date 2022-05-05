@@ -3,6 +3,9 @@ targets:
     builders:
       model_generator:
         enabled: true
+        options:
+          build_extensions:
+            '^lib/models/{{}}.dart': 'lib/models/base/{{}}.base.dart'
 
 builders:
   model_generator:
