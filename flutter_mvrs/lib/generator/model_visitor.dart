@@ -10,9 +10,9 @@ class ModelVisitor extends SimpleElementVisitor<void> {
   void visitConstructorElement(ConstructorElement element) {
     final elementReturnType = element.type.returnType.toString();
     className = elementReturnType.replaceFirst('*', '');
-    //for (final param in element.parameters) {
-    //  params[param.name] = param.type.toString();
-    //}
+    for (final param in element.parameters) {
+      params[param.name] = param.type.toString();
+    }
   }
 
   @override
