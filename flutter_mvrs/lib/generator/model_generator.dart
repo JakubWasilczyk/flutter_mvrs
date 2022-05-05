@@ -1,6 +1,6 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:build/build.dart';
-import 'package:flutter_mvrs/flutter_mvrs.dart';
+import 'package:flutter_mvrs/flutter_mvrs_annotations.dart';
 import 'package:source_gen/source_gen.dart';
 
 import 'model_visitor.dart';

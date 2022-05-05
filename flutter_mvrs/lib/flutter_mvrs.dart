@@ -1,6 +1,6 @@
 library flutter_mvrs;
 
-export 'src/annotations/model_annotation.dart';
+export 'annotations/model_annotation.dart';
 export 'src/model/base_model.dart';
 export 'src/model/change_tracker.dart';
 export 'src/model/created_at.dart';
