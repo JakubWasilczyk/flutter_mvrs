@@ -8,25 +8,30 @@ import 'model_visitor.dart';
 class ModelGenerator extends GeneratorForAnnotation<Model> {
   @override
   generateForAnnotatedElement(Element element, ConstantReader annotation, BuildStep buildStep) {
-    final visitor = ModelVisitor();
-    element.visitChildren(visitor);
+    try {
+      final visitor = ModelVisitor();
+      element.visitChildren(visitor);
 
-    final className = visitor.className;
-    final baseClassName = "Base$className";
-    final params = visitor.params;
-    final idType = params['id'] ?? 'void';
+      final className = visitor.className;
+      final baseClassName = "Base$className";
+      final params = visitor.params;
+      final idType = params['id'] ?? 'void';
 
-    final buffer = StringBuffer();
-    buffer.writeln("// $baseClassName");
-    //buffer.writeln("class $baseClassName extends BaseModel<$idType>${generateMixins(annotation)} {");
-//
-    //buffer.writeln(generateFields(params));
-    //buffer.writeln(generateConstructor(params, className));
-    //buffer.writeln(generateGettersAndSetters(annotation, params));
-    //buffer.writeln(generateJsonConstructors(annotation, params, className));
-//
-    //buffer.writeln("}");
-    return buffer.toString();
+      final buffer = StringBuffer();
+      buffer.writeln("// $baseClassName");
+      //buffer.writeln("class $baseClassName extends BaseModel<$idType>${generateMixins(annotation)} {");
+      //
+      //buffer.writeln(generateFields(params));
+      //buffer.writeln(generateConstructor(params, className));
+      //buffer.writeln(generateGettersAndSetters(annotation, params));
+      //buffer.writeln(generateJsonConstructors(annotation, params, className));
+      //
+      //buffer.writeln("}");
+      return buffer.toString();
+    } catch (e) {
+      print(e.toString());
+      return "//ERROR";
+    }
   }
 
   String generateMixins(ConstantReader annotation) {
