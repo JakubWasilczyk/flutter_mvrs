@@ -12,7 +12,9 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_mvrs:
-    path: ../flutter_mvrs
+    git:
+      url: git@github.com:JakubWasilczyk/flutter_mvrs.git
+      path: flutter_mvrs
 
 dev_dependencies:
   flutter_test:
