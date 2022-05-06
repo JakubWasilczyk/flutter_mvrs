@@ -103,8 +103,9 @@ class ModelGenerator extends GeneratorForAnnotation<Model> {
       buffer.writeln("_$param = $param,");
     }
     String result = buffer.toString();
-    result = result.replaceAll(",,", ",");
-    if (result.endsWith(",")) result = result.substring(0, result.length - 1);
+    while (result.endsWith(",")) {
+      result = result.substring(0, result.length - 1).trim();
+    }
     if (params.containsKey('id')) {
       result += ", super(id: id)";
     }
