@@ -76,8 +76,11 @@ class ModelGenerator extends GeneratorForAnnotation<Model> {
     return buffer.toString();
   }
 
-  String generateConstructor(Map<String, ParameterElement> params, String className) {
+  String generateConstructor(ConstantReader annotation, Map<String, ParameterElement> params, String className) {
     final buffer = StringBuffer();
+    final bool hasCreatedAt = annotation.read('createdAt').boolValue;
+    final bool hasUpdatedAt = annotation.read('updatedAt').boolValue;
+
     final baseClassName = "Base$className";
     buffer.writeln("$baseClassName({");
     for (final param in params.keys) {
@@ -88,7 +91,13 @@ class ModelGenerator extends GeneratorForAnnotation<Model> {
     buffer.write("}) : ");
     for (final param in params.keys) {
       if (param == 'id') continue;
-      buffer.writeln("_$param = $param");
+      if (param == 'createdAt' && hasCreatedAt) {
+        buffer.writeln("$param = $param");
+      } else if (param == 'updatedAt' && hasUpdatedAt) {
+        buffer.writeln("$param = $param");
+      } else {
+        buffer.writeln("_$param = $param");
+      }
       if (param != params.keys.last) buffer.write(",");
     }
     if (params.containsKey('id')) {
