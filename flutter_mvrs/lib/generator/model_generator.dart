@@ -100,16 +100,15 @@ class ModelGenerator extends GeneratorForAnnotation<Model> {
     for (final param in params.keys) {
       if (param == 'id') continue;
       if (directParams.contains(param)) continue;
-
-      String line = "_$param = $param,";
-      if (param == params.keys.last) line = line.substring(0, line.length - 1);
-      buffer.writeln(line);
+      buffer.writeln("_$param = $param,");
     }
+    String result = buffer.toString();
+    result = result.replaceAll(",,", ",");
+    if (result.endsWith(",")) result = result.substring(0, result.length - 1);
     if (params.containsKey('id')) {
-      buffer.write(", super(id: id)");
+      result += ", super(id: id)";
     }
-    buffer.write(";");
-    return buffer.toString();
+    return result + ";";
   }
 
   String generateGettersAndSetters(ConstantReader annotation, Map<String, ParameterElement> params) {
