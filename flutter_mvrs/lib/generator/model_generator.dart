@@ -53,7 +53,7 @@ class ModelGenerator extends GeneratorForAnnotation<Model> {
     return buffer.toString();
   }
 
-  String generateFields(Map<String, DartType> params) {
+  String generateFields(Map<String, ParameterElement> params) {
     final buffer = StringBuffer();
     for (final param in params.keys) {
       if (param == 'id') continue;
@@ -63,12 +63,12 @@ class ModelGenerator extends GeneratorForAnnotation<Model> {
     return buffer.toString();
   }
 
-  String generateConstructor(Map<String, DartType> params, String className) {
+  String generateConstructor(Map<String, ParameterElement> params, String className) {
     final buffer = StringBuffer();
     final baseClassName = "Base$className";
     buffer.writeln("$baseClassName({");
     for (final param in params.keys) {
-      final required = params[param].isRequiredPositional ? 'required ' : '';
+      final required = params[param]!.isRequiredNamed ? 'required ' : '';
       final paramType = params[param].toString().replaceFirst('*', '');
       buffer.writeln("$required$paramType $param,");
     }
@@ -85,7 +85,7 @@ class ModelGenerator extends GeneratorForAnnotation<Model> {
     return buffer.toString();
   }
 
-  String generateGettersAndSetters(ConstantReader annotation, Map<String, DartType> params) {
+  String generateGettersAndSetters(ConstantReader annotation, Map<String, ParameterElement> params) {
     final buffer = StringBuffer();
     final hasCreatedAt = annotation.read('createdAt').boolValue;
     final hasUpdatedAt = annotation.read('updatedAt').boolValue;
@@ -112,7 +112,7 @@ class ModelGenerator extends GeneratorForAnnotation<Model> {
     return buffer.toString();
   }
 
-  String generateJsonConstructors(ConstantReader annotation, Map<String, DartType> params, String className) {
+  String generateJsonConstructors(ConstantReader annotation, Map<String, ParameterElement> params, String className) {
     final buffer = StringBuffer();
     final List<String> jsonIgnore = annotation.read('jsonIgnore').listValue.map((e) => e.toString()).toList();
     final bool hasCreatedAt = annotation.read('createdAt').boolValue;
