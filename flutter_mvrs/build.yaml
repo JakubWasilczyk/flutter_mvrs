@@ -5,7 +5,7 @@ targets:
         enabled: true
         options:
           build_extensions:
-            "{{dir}}/{{file}}.dart": "{{dir}}/base/{{file}}.base.dart"
+            "{{dir}}/{{file}}.dart": ["{{dir}}/base/{{file}}.base.dart"]
 
 builders:
   model_generator:
