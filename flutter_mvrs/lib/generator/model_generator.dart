@@ -18,15 +18,15 @@ class ModelGenerator extends GeneratorForAnnotation<Model> {
       final idType = params['id'] ?? 'void';
 
       final buffer = StringBuffer();
-      buffer.writeln("// $baseClassName");
-      //buffer.writeln("class $baseClassName extends BaseModel<$idType>${generateMixins(annotation)} {");
+      //buffer.writeln("// $baseClassName");
+      buffer.writeln("class $baseClassName extends BaseModel<$idType>${generateMixins(annotation)} {");
 
-      //buffer.writeln(generateFields(params));
-      //buffer.writeln(generateConstructor(params, className));
-      //buffer.writeln(generateGettersAndSetters(annotation, params));
-      //buffer.writeln(generateJsonConstructors(annotation, params, className));
+      buffer.writeln(generateFields(params));
+      buffer.writeln(generateConstructor(params, className));
+      buffer.writeln(generateGettersAndSetters(annotation, params));
+      buffer.writeln(generateJsonConstructors(annotation, params, className));
 
-      //buffer.writeln("}");
+      buffer.writeln("}");
       return buffer.toString();
     } catch (e) {
       print(e.toString());
@@ -53,7 +53,7 @@ class ModelGenerator extends GeneratorForAnnotation<Model> {
     return buffer.toString();
   }
 
-  String generateFields(Map<String, String> params) {
+  String generateFields(Map<String, dynamic> params) {
     final buffer = StringBuffer();
     for (final param in params.keys) {
       if (param == 'id') continue;
@@ -62,7 +62,7 @@ class ModelGenerator extends GeneratorForAnnotation<Model> {
     return buffer.toString();
   }
 
-  String generateConstructor(Map<String, String> params, String className) {
+  String generateConstructor(Map<String, dynamic> params, String className) {
     final buffer = StringBuffer();
     final baseClassName = "Base$className";
     buffer.writeln("$baseClassName(");
@@ -78,7 +78,7 @@ class ModelGenerator extends GeneratorForAnnotation<Model> {
     return buffer.toString();
   }
 
-  String generateGettersAndSetters(ConstantReader annotation, Map<String, String> params) {
+  String generateGettersAndSetters(ConstantReader annotation, Map<String, dynamic> params) {
     final buffer = StringBuffer();
     final hasCreatedAt = annotation.read('createdAt').boolValue;
     final hasUpdatedAt = annotation.read('updatedAt').boolValue;
@@ -99,7 +99,7 @@ class ModelGenerator extends GeneratorForAnnotation<Model> {
     return buffer.toString();
   }
 
-  String generateJsonConstructors(ConstantReader annotation, Map<String, String> params, String className) {
+  String generateJsonConstructors(ConstantReader annotation, Map<String, dynamic> params, String className) {
     final buffer = StringBuffer();
     final jsonIgnore = annotation.read('jsonIgnore').listValue as List<String>;
     final hasCreatedAt = annotation.read('createdAt').boolValue;

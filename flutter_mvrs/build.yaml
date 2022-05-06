@@ -5,7 +5,7 @@ targets:
         enabled: true
         options:
           build_extensions:
-            '{{}}.dart': 'base/{{}}.base.dart'
+            '^lib/src/models/{{}}.dart': 'lib/src/models/base/{{}}.base.dart'
 
 builders:
   model_generator:
