@@ -60,9 +60,17 @@ class ModelGenerator extends GeneratorForAnnotation<Model> {
     final bool hasUpdatedAt = annotation.read('updatedAt').boolValue;
     for (final param in params.keys) {
       if (param == 'id') continue;
-      if (param == 'createdAt' && hasCreatedAt) continue;
-      if (param == 'updatedAt' && hasUpdatedAt) continue;
       final paramType = params[param]!.type.toString().replaceFirst('*', '');
+      if (param == 'createdAt' && hasCreatedAt) {
+        buffer.writeln("@override");
+        buffer.writeln("final $paramType $param;");
+        continue;
+      }
+      if (param == 'updatedAt' && hasUpdatedAt) {
+        buffer.writeln("@override");
+        buffer.writeln("final $paramType $param;");
+        continue;
+      }
       buffer.writeln("final $paramType _$param;");
     }
     return buffer.toString();
