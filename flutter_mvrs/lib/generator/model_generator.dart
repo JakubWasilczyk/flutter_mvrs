@@ -15,7 +15,8 @@ class ModelGenerator extends GeneratorForAnnotation<Model> {
       final className = visitor.className;
       final baseClassName = "Base$className";
       final params = visitor.params;
-      final idType = params['id'] ?? 'void';
+      String idType = params['id'] != null ? params['id']!.type.toString() : 'void';
+      idType = idType.replaceFirst('*', '');
 
       final buffer = StringBuffer();
       //buffer.writeln("// $baseClassName");
@@ -57,7 +58,7 @@ class ModelGenerator extends GeneratorForAnnotation<Model> {
     final buffer = StringBuffer();
     for (final param in params.keys) {
       if (param == 'id') continue;
-      final paramType = params[param].toString().replaceFirst('*', '');
+      final paramType = params[param]!.type.toString().replaceFirst('*', '');
       buffer.writeln("final $paramType _$param;");
     }
     return buffer.toString();
@@ -69,7 +70,7 @@ class ModelGenerator extends GeneratorForAnnotation<Model> {
     buffer.writeln("$baseClassName({");
     for (final param in params.keys) {
       final required = params[param]!.isRequiredNamed ? 'required ' : '';
-      final paramType = params[param].toString().replaceFirst('*', '');
+      final paramType = params[param]!.type.toString().replaceFirst('*', '');
       buffer.writeln("$required$paramType $param,");
     }
     buffer.write("}) : ");
@@ -96,7 +97,8 @@ class ModelGenerator extends GeneratorForAnnotation<Model> {
       if (param == 'id') continue;
       if (param == 'createdAt' && hasCreatedAt) continue;
       if (param == 'updatedAt' && hasUpdatedAt) continue;
-      buffer.writeln("${params[param]} get $param => get('$param', _$param);");
+      final paramType = params[param]!.type.toString().replaceFirst('*', '');
+      buffer.writeln("$paramType get $param => get('$param', _$param);");
     }
 
     buffer.writeln('');
@@ -105,7 +107,8 @@ class ModelGenerator extends GeneratorForAnnotation<Model> {
       if (param == 'id') continue;
       if (param == 'createdAt' && hasCreatedAt) continue;
       if (param == 'updatedAt' && hasUpdatedAt) continue;
-      buffer.writeln("set $param(${params[param]} value) => set('$param', value);");
+      final paramType = params[param]!.type.toString().replaceFirst('*', '');
+      buffer.writeln("set $param($paramType value) => set('$param', value);");
     }
     buffer.writeln('');
 
