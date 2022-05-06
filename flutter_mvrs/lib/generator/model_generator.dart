@@ -19,6 +19,7 @@ class ModelGenerator extends GeneratorForAnnotation<Model> {
 
       final buffer = StringBuffer();
       //buffer.writeln("// $baseClassName");
+      buffer.writeln("import 'package:flutter_mvrs/flutter_mvrs.dart';");
       buffer.writeln("class $baseClassName extends BaseModel<$idType>${generateMixins(annotation)} {");
 
       buffer.writeln(generateFields(params));
@@ -67,7 +68,6 @@ class ModelGenerator extends GeneratorForAnnotation<Model> {
     final baseClassName = "Base$className";
     buffer.writeln("$baseClassName(");
     for (final param in params.keys) {
-      if (param == 'id') continue;
       buffer.writeln("${params[param]} this._$param,");
     }
     if (params.containsKey('id')) {
@@ -115,16 +115,16 @@ class ModelGenerator extends GeneratorForAnnotation<Model> {
     }
     buffer.writeln("};");
 
-    buffer.writeln("$className.fromJson(Map<String, dynamic> json) : ");
+    buffer.writeln("static $className fromJson(Map<String, dynamic> json) => $className(");
     for (final param in params.keys) {
       if (param == 'id') continue;
       if (param == 'createdAt' && hasCreatedAt) continue;
       if (param == 'updatedAt' && hasUpdatedAt) continue;
       if (jsonIgnore.contains(param)) continue;
-      buffer.writeln("$param: json['$param']");
-      if (params.keys.last != param) buffer.write(',');
+      buffer.write("$param: json['$param']");
+      if (params.keys.last != param) buffer.writeln(',');
     }
-    buffer.write(";");
+    buffer.writeln(");");
 
     return buffer.toString();
   }

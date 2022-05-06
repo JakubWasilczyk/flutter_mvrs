@@ -14,10 +14,8 @@ class ModelVisitor extends SimpleElementVisitor<void> {
       for (final param in element.parameters) {
         final elementType = param.type.toString();
         params[param.name] = elementType.replaceFirst('*', '');
-        print("${params[param.name]}");
       }
     } catch (e) {
-      print("visitConstructorElement");
       throw Exception(e.toString());
     }
   }
@@ -27,9 +25,7 @@ class ModelVisitor extends SimpleElementVisitor<void> {
     try {
       final elementType = element.type.toString();
       fields[element.name] = elementType.replaceFirst('*', '');
-      print("${fields[element.name]}");
     } catch (e) {
-      print("visitFieldElement");
       throw Exception(e.toString());
     }
   }
