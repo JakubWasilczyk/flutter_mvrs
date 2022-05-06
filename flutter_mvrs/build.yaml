@@ -8,7 +8,7 @@ builders:
   model_generator:
     import: "package:flutter_mvrs/builder.dart"
     builder_factories: ["modelBuilder"]
-    build_extensions: { "models/{{}}.dart": ["models/base/{{}}.base.dart"] }
+    build_extensions: { "{{dir}}/{{file}}.dart": ["{{dir}}/base/{{file}}.base.dart"] }
     auto_apply: dependents
     build_to: source
     applies_builders: ["source_gen|combining_builder"]
