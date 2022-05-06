@@ -19,7 +19,6 @@ class ModelGenerator extends GeneratorForAnnotation<Model> {
 
       final buffer = StringBuffer();
       //buffer.writeln("// $baseClassName");
-      buffer.writeln("import 'package:flutter_mvrs/flutter_mvrs.dart';");
       buffer.writeln("class $baseClassName extends BaseModel<$idType>${generateMixins(annotation)} {");
 
       buffer.writeln(generateFields(params));
@@ -68,13 +67,18 @@ class ModelGenerator extends GeneratorForAnnotation<Model> {
     final baseClassName = "Base$className";
     buffer.writeln("$baseClassName(");
     for (final param in params.keys) {
-      buffer.writeln("${params[param]} this._$param,");
+      buffer.writeln("${params[param]} $param,");
+    }
+    buffer.write(") : ");
+    for (final param in params.keys) {
+      if (param == 'id') continue;
+      buffer.writeln("$param = _$param");
+      if (param != params.keys.last) buffer.write(",");
     }
     if (params.containsKey('id')) {
-      buffer.write(") : super(id: id);");
-    } else {
-      buffer.write(");");
+      buffer.write("super(id: id)");
     }
+    buffer.write(";");
     return buffer.toString();
   }
 
