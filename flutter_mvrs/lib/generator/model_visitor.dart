@@ -13,6 +13,11 @@ class ModelVisitor extends SimpleElementVisitor<void> {
       final elementReturnType = element.type.returnType.toString();
       className = elementReturnType.replaceFirst('*', '');
       for (final param in element.parameters) {
+        print("isNamed: ${param.isNamed}");
+        print("isOptionalNamed: ${param.isOptionalNamed}");
+        print("isFinal: ${param.isFinal}");
+        print("isPublic: ${param.isPublic}");
+        print("location: ${param.location}");
         params[param.name] = param;
       }
     } catch (e) {
