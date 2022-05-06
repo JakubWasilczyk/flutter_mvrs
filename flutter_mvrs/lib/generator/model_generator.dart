@@ -91,25 +91,27 @@ class ModelGenerator extends GeneratorForAnnotation<Model> {
       final paramType = params[param]!.type.toString().replaceFirst('*', '');
 
       if (directParams.contains(param)) {
-        buffer.writeln("$required this.$param,");
+        buffer.writeln("${required}this.$param,");
       } else {
         buffer.writeln("$required$paramType $param,");
       }
     }
     buffer.write("}) : ");
+    final paramsToPrint = <String>[];
     for (final param in params.keys) {
       if (param == 'id') continue;
       if (directParams.contains(param)) continue;
-      buffer.writeln("_$param = $param,");
+      paramsToPrint.add("_$param = $param");
     }
-    String result = buffer.toString();
-    while (result.endsWith(",")) {
-      result = result.substring(0, result.length - 1).trim();
+    for (final param in paramsToPrint) {
+      buffer.write(param);
+      if (paramsToPrint.last != param) buffer.write(",");
+      buffer.writeln();
     }
     if (params.containsKey('id')) {
-      result += ", super(id: id)";
+      buffer.write(", super(id: id)");
     }
-    return result + ";";
+    return buffer.toString() + ";";
   }
 
   String generateGettersAndSetters(ConstantReader annotation, Map<String, ParameterElement> params) {
