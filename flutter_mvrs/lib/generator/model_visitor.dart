@@ -3,8 +3,8 @@ import 'package:analyzer/dart/element/visitor.dart';
 
 class ModelVisitor extends SimpleElementVisitor<void> {
   late String className;
-  final params = <String, String>{};
-  final fields = <String, String>{};
+  final params = <String, dynamic>{};
+  final fields = <String, dynamic>{};
 
   @override
   void visitConstructorElement(ConstructorElement element) {

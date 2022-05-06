@@ -19,14 +19,14 @@ class ModelGenerator extends GeneratorForAnnotation<Model> {
 
       final buffer = StringBuffer();
       buffer.writeln("// $baseClassName");
-      buffer.writeln("class $baseClassName extends BaseModel<$idType>${generateMixins(annotation)} {");
+      //buffer.writeln("class $baseClassName extends BaseModel<$idType>${generateMixins(annotation)} {");
 
-      buffer.writeln(generateFields(params));
-      buffer.writeln(generateConstructor(params, className));
-      buffer.writeln(generateGettersAndSetters(annotation, params));
-      buffer.writeln(generateJsonConstructors(annotation, params, className));
+      //buffer.writeln(generateFields(params));
+      //buffer.writeln(generateConstructor(params, className));
+      //buffer.writeln(generateGettersAndSetters(annotation, params));
+      //buffer.writeln(generateJsonConstructors(annotation, params, className));
 
-      buffer.writeln("}");
+      //buffer.writeln("}");
       return buffer.toString();
     } catch (e) {
       print(e.toString());
