@@ -10,7 +10,7 @@ Builder modelBuilder(BuilderOptions options) => PartBuilder(
       '.base.dart',
       options: const BuilderOptions({
         "build_extensions": {
-          ".dart": "/base/{{}}.base.dart",
+          "{{}}.dart": "base/{{}}.base.dart",
         },
       }),
     );
