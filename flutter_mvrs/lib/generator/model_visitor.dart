@@ -14,14 +14,15 @@ class ModelVisitor extends SimpleElementVisitor<void> {
       className = elementReturnType.replaceFirst('*', '');
       final _params1 = element.parameters;
       final _params2 = element.declaration.parameters;
+      final _params3 = element.typeParameters;
       print("Parameters difference(${_params1.length} - ${_params2.length}): ${_params1.length - _params2.length}");
+      print("Parameters difference(${_params1.length} - ${_params3.length}): ${_params1.length - _params3.length}");
       for (final param in element.declaration.parameters) {
         print("------------${param.name}------------");
         print("isNamed: ${param.isNamed}");
         print("isOptionalNamed: ${param.isOptionalNamed}");
         print("isFinal: ${param.isFinal}");
         print("isPublic: ${param.isPublic}");
-        print("location: ${param.location}");
         print("hasFactory: ${param.hasFactory}");
         print("-------------------------------------");
         params[param.name] = param;
