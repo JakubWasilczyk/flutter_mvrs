@@ -10,21 +10,10 @@ class ModelVisitor extends SimpleElementVisitor<void> {
   @override
   void visitConstructorElement(ConstructorElement element) {
     try {
+      if (element.isFactory) return;
       final elementReturnType = element.type.returnType.toString();
       className = elementReturnType.replaceFirst('*', '');
-      final _params1 = element.parameters;
-      final _params2 = element.declaration.parameters;
-      final _params3 = element.typeParameters;
-      print("Parameters difference(${_params1.length} - ${_params2.length}): ${_params1.length - _params2.length}");
-      print("Parameters difference(${_params1.length} - ${_params3.length}): ${_params1.length - _params3.length}");
-      for (final param in element.declaration.parameters) {
-        print("------------${param.name}------------");
-        print("isNamed: ${param.isNamed}");
-        print("isOptionalNamed: ${param.isOptionalNamed}");
-        print("isFinal: ${param.isFinal}");
-        print("isPublic: ${param.isPublic}");
-        print("hasFactory: ${param.hasFactory}");
-        print("-------------------------------------");
+      for (final param in element.parameters) {
         params[param.name] = param;
       }
     } catch (e) {
