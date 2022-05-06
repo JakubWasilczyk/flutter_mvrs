@@ -23,7 +23,7 @@ class ModelGenerator extends GeneratorForAnnotation<Model> {
       buffer.writeln("class $baseClassName extends BaseModel<$idType>${generateMixins(annotation)} {");
 
       buffer.writeln(generateFields(annotation, params));
-      buffer.writeln(generateConstructor(params, className));
+      buffer.writeln(generateConstructor(annotation, params, className));
       buffer.writeln(generateGettersAndSetters(annotation, params));
       buffer.writeln(generateJsonConstructors(annotation, params, className));
 
