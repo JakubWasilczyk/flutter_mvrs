@@ -3,15 +3,12 @@ targets:
     builders:
       model_generator:
         enabled: true
-        options:
-          build_extensions:
-            '^lib/src/models/{{}}.dart': 'lib/src/models/base/{{}}.base.dart'
 
 builders:
   model_generator:
     import: "package:flutter_mvrs/builder.dart"
     builder_factories: ["modelBuilder"]
-    build_extensions: { "{{}}.dart": ["/base/{{}}.base.dart"] }
+    build_extensions: { "models/{{}}.dart": ["models/base/{{}}.base.dart"] }
     auto_apply: dependents
     build_to: source
     applies_builders: ["source_gen|combining_builder"]
