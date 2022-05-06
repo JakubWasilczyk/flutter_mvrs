@@ -72,7 +72,7 @@ class ModelGenerator extends GeneratorForAnnotation<Model> {
     buffer.write(") : ");
     for (final param in params.keys) {
       if (param == 'id') continue;
-      buffer.writeln("$param = _$param");
+      buffer.writeln("_$param = $param");
       if (param != params.keys.last) buffer.write(",");
     }
     if (params.containsKey('id')) {
@@ -125,8 +125,7 @@ class ModelGenerator extends GeneratorForAnnotation<Model> {
       if (param == 'createdAt' && hasCreatedAt) continue;
       if (param == 'updatedAt' && hasUpdatedAt) continue;
       if (jsonIgnore.contains(param)) continue;
-      buffer.write("$param: json['$param']");
-      if (params.keys.last != param) buffer.writeln(',');
+      buffer.write("$param: json['$param'],");
     }
     buffer.writeln(");");
 
