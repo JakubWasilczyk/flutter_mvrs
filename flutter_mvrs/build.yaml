@@ -3,6 +3,9 @@ targets:
     builders:
       model_generator:
         enabled: true
+        options:
+          build_extensions:
+            "{{dir}}/{{file}}.dart": "{{dir}}/base/{{file}}.base.dart"
 
 builders:
   model_generator:
