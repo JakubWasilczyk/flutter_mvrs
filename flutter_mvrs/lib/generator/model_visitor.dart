@@ -8,16 +8,27 @@ class ModelVisitor extends SimpleElementVisitor<void> {
 
   @override
   void visitConstructorElement(ConstructorElement element) {
-    final elementReturnType = element.type.returnType.toString();
-    className = elementReturnType.replaceFirst('*', '');
-    for (final param in element.parameters) {
-      params[param.name] = param.type.toString();
+    try {
+      final elementReturnType = element.type.returnType.toString();
+      className = elementReturnType.replaceFirst('*', '');
+      for (final param in element.parameters) {
+        final elementType = param.type.toString();
+        params[param.name] = elementType.replaceFirst('*', '');
+      }
+    } catch (e) {
+      print("visitConstructorElement");
+      throw Exception(e.toString());
     }
   }
 
   @override
   void visitFieldElement(FieldElement element) {
-    final elementType = element.type.toString();
-    fields[element.name] = elementType.replaceFirst('*', '');
+    try {
+      final elementType = element.type.toString();
+      fields[element.name] = elementType.replaceFirst('*', '');
+    } catch (e) {
+      print("visitFieldElement");
+      throw Exception(e.toString());
+    }
   }
 }
