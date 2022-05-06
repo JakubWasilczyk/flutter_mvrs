@@ -53,7 +53,7 @@ class ModelGenerator extends GeneratorForAnnotation<Model> {
     return buffer.toString();
   }
 
-  String generateFields(Map<String, dynamic> params) {
+  String generateFields(Map<String, String> params) {
     final buffer = StringBuffer();
     for (final param in params.keys) {
       if (param == 'id') continue;
@@ -62,7 +62,7 @@ class ModelGenerator extends GeneratorForAnnotation<Model> {
     return buffer.toString();
   }
 
-  String generateConstructor(Map<String, dynamic> params, String className) {
+  String generateConstructor(Map<String, String> params, String className) {
     final buffer = StringBuffer();
     final baseClassName = "Base$className";
     buffer.writeln("$baseClassName(");
@@ -78,7 +78,7 @@ class ModelGenerator extends GeneratorForAnnotation<Model> {
     return buffer.toString();
   }
 
-  String generateGettersAndSetters(ConstantReader annotation, Map<String, dynamic> params) {
+  String generateGettersAndSetters(ConstantReader annotation, Map<String, String> params) {
     final buffer = StringBuffer();
     final hasCreatedAt = annotation.read('createdAt').boolValue;
     final hasUpdatedAt = annotation.read('updatedAt').boolValue;
@@ -99,11 +99,11 @@ class ModelGenerator extends GeneratorForAnnotation<Model> {
     return buffer.toString();
   }
 
-  String generateJsonConstructors(ConstantReader annotation, Map<String, dynamic> params, String className) {
+  String generateJsonConstructors(ConstantReader annotation, Map<String, String> params, String className) {
     final buffer = StringBuffer();
-    final jsonIgnore = annotation.read('jsonIgnore').listValue as List<String>;
-    final hasCreatedAt = annotation.read('createdAt').boolValue;
-    final hasUpdatedAt = annotation.read('updatedAt').boolValue;
+    final List<String> jsonIgnore = annotation.read('jsonIgnore').listValue.map((e) => e.toString()).toList();
+    final bool hasCreatedAt = annotation.read('createdAt').boolValue;
+    final bool hasUpdatedAt = annotation.read('updatedAt').boolValue;
 
     buffer.writeln("Map<String, dynamic> toJson() => {");
     for (final param in params.keys) {
