@@ -58,21 +58,21 @@ class ModelGenerator extends GeneratorForAnnotation<Model> {
     final buffer = StringBuffer();
     final bool hasCreatedAt = annotation.read('createdAt').boolValue;
     final bool hasUpdatedAt = annotation.read('updatedAt').boolValue;
+    final overrides = [];
+    if (hasCreatedAt) overrides.add("createdAt");
+    if (hasUpdatedAt) overrides.add("updatedAt");
+
     for (final param in params.keys) {
       if (param == 'id') continue;
       final paramType = params[param]!.type.toString().replaceFirst('*', '');
-      if (param == 'createdAt' && hasCreatedAt) {
+      if (overrides.contains(param)) {
         buffer.writeln("@override");
         buffer.writeln("final $paramType $param;");
-        continue;
+      } else {
+        buffer.writeln("final $paramType _$param;");
       }
-      if (param == 'updatedAt' && hasUpdatedAt) {
-        buffer.writeln("@override");
-        buffer.writeln("final $paramType $param;");
-        continue;
-      }
-      buffer.writeln("final $paramType _$param;");
     }
+
     return buffer.toString();
   }
 
@@ -80,24 +80,28 @@ class ModelGenerator extends GeneratorForAnnotation<Model> {
     final buffer = StringBuffer();
     final bool hasCreatedAt = annotation.read('createdAt').boolValue;
     final bool hasUpdatedAt = annotation.read('updatedAt').boolValue;
+    final directParams = [];
+    if (hasCreatedAt) directParams.add("createdAt");
+    if (hasUpdatedAt) directParams.add("updatedAt");
 
     final baseClassName = "Base$className";
     buffer.writeln("$baseClassName({");
     for (final param in params.keys) {
       final required = params[param]!.isRequiredNamed ? 'required ' : '';
       final paramType = params[param]!.type.toString().replaceFirst('*', '');
-      buffer.writeln("$required$paramType $param,");
+
+      if (directParams.contains(param)) {
+        buffer.writeln("$required this.$param,");
+      } else {
+        buffer.writeln("$required$paramType $param,");
+      }
     }
     buffer.write("}) : ");
     for (final param in params.keys) {
       if (param == 'id') continue;
-      if (param == 'createdAt' && hasCreatedAt) {
-        buffer.writeln("$param = $param");
-      } else if (param == 'updatedAt' && hasUpdatedAt) {
-        buffer.writeln("$param = $param");
-      } else {
-        buffer.writeln("_$param = $param");
-      }
+      if (directParams.contains(param)) continue;
+
+      buffer.writeln("_$param = $param");
       if (param != params.keys.last) buffer.write(",");
     }
     if (params.containsKey('id')) {
