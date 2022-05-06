@@ -101,8 +101,9 @@ class ModelGenerator extends GeneratorForAnnotation<Model> {
       if (param == 'id') continue;
       if (directParams.contains(param)) continue;
 
-      buffer.writeln("_$param = $param");
-      if (param != params.keys.last) buffer.write(",");
+      String line = "_$param = $param,";
+      if (param == params.keys.last) line = line.substring(0, line.length - 1);
+      buffer.writeln(line);
     }
     if (params.containsKey('id')) {
       buffer.write(", super(id: id)");
