@@ -53,40 +53,45 @@ class ModelGenerator extends GeneratorForAnnotation<Model> {
     return buffer.toString();
   }
 
-  String generateFields(Map<String, String> params) {
+  String generateFields(Map<String, DartType> params) {
     final buffer = StringBuffer();
     for (final param in params.keys) {
       if (param == 'id') continue;
-      buffer.writeln("final ${params[param]} _$param;");
+      final paramType = params[param].toString().replaceFirst('*', '');
+      buffer.writeln("final $paramType _$param;");
     }
     return buffer.toString();
   }
 
-  String generateConstructor(Map<String, String> params, String className) {
+  String generateConstructor(Map<String, DartType> params, String className) {
     final buffer = StringBuffer();
     final baseClassName = "Base$className";
-    buffer.writeln("$baseClassName(");
+    buffer.writeln("$baseClassName({");
     for (final param in params.keys) {
-      buffer.writeln("${params[param]} $param,");
+      final required = params[param].isRequiredPositional ? 'required ' : '';
+      final paramType = params[param].toString().replaceFirst('*', '');
+      buffer.writeln("$required$paramType $param,");
     }
-    buffer.write(") : ");
+    buffer.write("}) : ");
     for (final param in params.keys) {
       if (param == 'id') continue;
       buffer.writeln("_$param = $param");
       if (param != params.keys.last) buffer.write(",");
     }
     if (params.containsKey('id')) {
-      buffer.write("super(id: id)");
+      buffer.write(", super(id: id)");
     }
     buffer.write(";");
     return buffer.toString();
   }
 
-  String generateGettersAndSetters(ConstantReader annotation, Map<String, String> params) {
+  String generateGettersAndSetters(ConstantReader annotation, Map<String, DartType> params) {
     final buffer = StringBuffer();
     final hasCreatedAt = annotation.read('createdAt').boolValue;
     final hasUpdatedAt = annotation.read('updatedAt').boolValue;
 
+    buffer.writeln('');
+    buffer.writeln('// GETTERS');
     for (final param in params.keys) {
       if (param == 'id') continue;
       if (param == 'createdAt' && hasCreatedAt) continue;
@@ -94,16 +99,20 @@ class ModelGenerator extends GeneratorForAnnotation<Model> {
       buffer.writeln("${params[param]} get $param => get('$param', _$param);");
     }
 
+    buffer.writeln('');
+    buffer.writeln('// SETTERS');
     for (final param in params.keys) {
       if (param == 'id') continue;
       if (param == 'createdAt' && hasCreatedAt) continue;
       if (param == 'updatedAt' && hasUpdatedAt) continue;
       buffer.writeln("set $param(${params[param]} value) => set('$param', value);");
     }
+    buffer.writeln('');
+
     return buffer.toString();
   }
 
-  String generateJsonConstructors(ConstantReader annotation, Map<String, String> params, String className) {
+  String generateJsonConstructors(ConstantReader annotation, Map<String, DartType> params, String className) {
     final buffer = StringBuffer();
     final List<String> jsonIgnore = annotation.read('jsonIgnore').listValue.map((e) => e.toString()).toList();
     final bool hasCreatedAt = annotation.read('createdAt').boolValue;

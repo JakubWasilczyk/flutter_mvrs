@@ -3,8 +3,8 @@ import 'package:analyzer/dart/element/visitor.dart';
 
 class ModelVisitor extends SimpleElementVisitor<void> {
   late String className;
-  final Map<String, String> params = {};
-  final Map<String, String> fields = {};
+  final Map<String, DartType> params = {};
+  final Map<String, DartType> fields = {};
 
   @override
   void visitConstructorElement(ConstructorElement element) {
@@ -12,8 +12,7 @@ class ModelVisitor extends SimpleElementVisitor<void> {
       final elementReturnType = element.type.returnType.toString();
       className = elementReturnType.replaceFirst('*', '');
       for (final param in element.parameters) {
-        final elementType = param.type.toString();
-        params[param.name] = elementType.replaceFirst('*', '');
+        params[param.name] = param.type;
       }
     } catch (e) {
       throw Exception(e.toString());
@@ -23,8 +22,7 @@ class ModelVisitor extends SimpleElementVisitor<void> {
   @override
   void visitFieldElement(FieldElement element) {
     try {
-      final elementType = element.type.toString();
-      fields[element.name] = elementType.replaceFirst('*', '');
+      fields[element.name] = element.type;
     } catch (e) {
       throw Exception(e.toString());
     }
