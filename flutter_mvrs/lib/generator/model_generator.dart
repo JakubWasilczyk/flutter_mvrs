@@ -1,4 +1,5 @@
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/type.dart';
 import 'package:build/build.dart';
 import 'package:flutter_mvrs/annotations/model_annotation.dart';
 import 'package:source_gen/source_gen.dart';
@@ -15,6 +16,7 @@ class ModelGenerator extends GeneratorForAnnotation<Model> {
       final className = visitor.className;
       final baseClassName = "Base$className";
       final params = visitor.params;
+      final fields = visitor.fields;
       String idType = params['id'] != null ? params['id']!.type.toString() : 'void';
       idType = idType.replaceFirst('*', '');
 
@@ -23,7 +25,7 @@ class ModelGenerator extends GeneratorForAnnotation<Model> {
       buffer.writeln("class $baseClassName extends BaseModel<$idType>${generateMixins(annotation)} {");
 
       buffer.writeln(generateFields(annotation, params));
-      buffer.writeln(generateConstructor(annotation, params, className));
+      buffer.writeln(generateConstructor(annotation, params, fields, className));
       buffer.writeln(generateGettersAndSetters(annotation, params));
       buffer.writeln(generateJsonConstructors(annotation, params, className));
 
@@ -76,7 +78,12 @@ class ModelGenerator extends GeneratorForAnnotation<Model> {
     return buffer.toString();
   }
 
-  String generateConstructor(ConstantReader annotation, Map<String, ParameterElement> params, String className) {
+  String generateConstructor(
+    ConstantReader annotation,
+    Map<String, ParameterElement> params,
+    Map<String, DartType> fields,
+    String className,
+  ) {
     final buffer = StringBuffer();
     final bool hasCreatedAt = annotation.read('createdAt').boolValue;
     final bool hasUpdatedAt = annotation.read('updatedAt').boolValue;
