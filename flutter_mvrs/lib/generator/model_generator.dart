@@ -204,7 +204,6 @@ class ModelGenerator extends GeneratorForAnnotation<Model> {
     final List<String> jsonIgnore = annotation.read('jsonIgnore').listValue.map((e) => e.toString()).toList();
 
     for (final param in params.keys) {
-      if (param == 'id') continue;
       if (jsonIgnore.contains(param)) continue;
       buffer.write("$param: json['$param'],");
     }
