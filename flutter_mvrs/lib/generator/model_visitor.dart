@@ -14,7 +14,7 @@ class ModelVisitor extends SimpleElementVisitor<void> {
       final elementReturnType = element.type.returnType.toString();
       className = elementReturnType.replaceFirst('*', '');
       for (final param in element.parameters) {
-        params[param.name] = param;
+        if (!param.isFinal) params[param.name] = param;
       }
     } catch (e) {
       throw Exception(e.toString());
