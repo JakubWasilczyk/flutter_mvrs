@@ -35,13 +35,13 @@ abstract class CollectionProvider<T extends BaseModel> extends BaseFirestore<T> 
   }
 
   Future<String> _update(T model, {String? parent}) async {
-    final ref = doc(model.getId()!, parent: parent);
+    final ref = doc(model.id!, parent: parent);
     await ref.set(model, SetOptions(merge: true));
     return ref.id;
   }
 
   Future<String> save(T model, {String? parent}) {
-    if (model.getId() == null) return _create(model, parent: parent);
+    if (model.id == null) return _create(model, parent: parent);
     return _update(model, parent: parent);
   }
 
