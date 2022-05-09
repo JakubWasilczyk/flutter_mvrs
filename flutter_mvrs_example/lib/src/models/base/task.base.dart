@@ -9,32 +9,38 @@ part of '../task.dart';
 class BaseTask extends BaseModel<String?> {
   final String _title;
   final String _subtitle;
-  final bool _isChecked;
+  final bool? _isChecked;
+  final TestType? _testType;
 
   BaseTask({
     String? id,
     required String title,
     required String subtitle,
-    bool isChecked = false,
+    bool? isChecked,
+    TestType? testType,
   })  : _title = title,
         _subtitle = subtitle,
-        _isChecked = isChecked,
+        _isChecked = isChecked ?? false,
+        _testType = testType ?? const TestType("alias"),
         super(id: id);
 
   //GETTERS
   String get title => get('title', _title);
   String get subtitle => get('subtitle', _subtitle);
-  bool get isChecked => get('isChecked', _isChecked);
+  bool? get isChecked => get('isChecked', _isChecked);
+  TestType? get testType => get('testType', _testType);
 
   //SETTERS
   set title(String value) => set('title', value);
   set subtitle(String value) => set('subtitle', value);
-  set isChecked(bool value) => set('isChecked', value);
+  set isChecked(bool? value) => set('isChecked', value);
+  set testType(TestType? value) => set('testType', value);
 
   Map<String, dynamic> toJson() => {
-        'title': title.toString(),
+        'title': title,
         'subtitle': subtitle,
         'isChecked': isChecked,
+        'testType': testType,
       };
 
   static Task fromJson(Map<String, dynamic> json) => Task(
@@ -42,5 +48,6 @@ class BaseTask extends BaseModel<String?> {
         title: json['title'],
         subtitle: json['subtitle'],
         isChecked: json['isChecked'],
+        testType: json['testType'],
       );
 }

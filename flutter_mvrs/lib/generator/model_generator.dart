@@ -35,8 +35,7 @@ class ModelGenerator extends GeneratorForAnnotation<Model> {
   bool hasUpdatedAt = false;
   List<String> fromJsonIgnore = [];
   List<String> toJsonIgnore = [];
-  Map<String, String> fromJsonAdditional = {};
-  Map<String, String> toJsonAdditional = {};
+  Map<String, String> defaultValues = {};
   Map<String, ParameterElement> params = {};
 
   @override
@@ -49,14 +48,10 @@ class ModelGenerator extends GeneratorForAnnotation<Model> {
       hasUpdatedAt = annotation.read('updatedAt').boolValue;
       fromJsonIgnore = annotation.read('fromJsonIgnore').listValue.map((e) => e.toStringValue()!).toList();
       toJsonIgnore = annotation.read('toJsonIgnore').listValue.map((e) => e.toStringValue()!).toList();
-      /*fromJsonAdditional = annotation
-          .read('fromJsonAdditional')
-          .mapValue
-          .map((e, v) => MapEntry(e!.toStringValue()!, v!.toStringValue()!));*/
-      toJsonAdditional = annotation
-          .read('toJsonAdditional')
-          .mapValue
-          .map((e, v) => MapEntry(e!.toStringValue()!, v!.toStringValue()!));
+      defaultValues = annotation.read('defaultValues').mapValue.map(
+            (e, v) => MapEntry(e!.toStringValue()!, v!.toStringValue() ?? ""),
+          );
+      defaultValues.removeWhere((key, value) => key.isEmpty || value.isEmpty);
 
       params = visitor.params;
 
@@ -163,9 +158,13 @@ class ModelGenerator extends GeneratorForAnnotation<Model> {
     if (hasUpdatedAt) directParams.add("updatedAt");
 
     for (final param in params.keys) {
-      if (!directParams.contains(param)) {
-        buffer.writeln("_$param = $param,");
+      if (directParams.contains(param)) continue;
+
+      String defaultValue = "";
+      if (defaultValues.containsKey(param)) {
+        defaultValue = " ?? ${defaultValues[param]}";
       }
+      buffer.writeln("_$param = $param$defaultValue,");
     }
     return buffer.toString();
   }
@@ -198,8 +197,7 @@ class ModelGenerator extends GeneratorForAnnotation<Model> {
     final buffer = StringBuffer();
     for (final param in params.keys) {
       if (toJsonIgnore.contains(param)) continue;
-      final additional = toJsonAdditional[param] ?? "";
-      buffer.writeln("'$param': $param$additional,");
+      buffer.writeln("'$param': $param,");
     }
     return buffer.toString();
   }

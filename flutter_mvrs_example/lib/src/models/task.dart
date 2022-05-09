@@ -4,8 +4,9 @@ part 'base/task.base.dart';
 
 @Model(
   toJsonIgnore: ['id'],
-  toJsonAdditional: {
-    "title": ".toString()",
+  defaultValues: {
+    "isChecked": "false",
+    "testType": "const TestType(\"alias\")",
   },
 )
 class Task extends BaseTask {
@@ -15,7 +16,8 @@ class Task extends BaseTask {
     String? id,
     required String title,
     required String subtitle,
-    bool isChecked = false,
+    bool? isChecked,
+    TestType? testType,
     this.exists = false,
   }) : super(
           id: id,
@@ -24,4 +26,10 @@ class Task extends BaseTask {
         );
 
   factory Task.fromJson(Map<String, dynamic> json) => BaseTask.fromJson(json);
+}
+
+class TestType {
+  final String hello;
+
+  const TestType(this.hello);
 }
