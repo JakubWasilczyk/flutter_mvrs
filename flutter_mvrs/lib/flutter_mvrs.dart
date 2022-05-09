@@ -9,3 +9,5 @@ export 'src/repository/listenable_param_repository.dart';
 export 'src/repository/listenable_repository.dart';
 export 'src/repository/model_param_repository.dart';
 export 'src/repository/model_repository.dart';
+export 'src/service/filter.dart';
+export 'src/service/filters.dart';
