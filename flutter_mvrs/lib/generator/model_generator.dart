@@ -31,15 +31,26 @@ class ModelGenerator extends GeneratorForAnnotation<Model> {
       "\n"
       "}\n";
 
+  bool hasCreatedAt = false;
+  bool hasUpdatedAt = false;
+  List<String> fromJsonIgnore = [];
+  List<String> toJsonIgnore = [];
+  Map<String, ParameterElement> params = {};
+
   @override
   generateForAnnotatedElement(Element element, ConstantReader annotation, BuildStep buildStep) {
     try {
       final visitor = ModelVisitor();
       element.visitChildren(visitor);
 
+      hasCreatedAt = annotation.read('createdAt').boolValue;
+      hasUpdatedAt = annotation.read('updatedAt').boolValue;
+      fromJsonIgnore = annotation.read('fromJsonIgnore').listValue.map((e) => e.toString()).toList();
+      toJsonIgnore = annotation.read('toJsonIgnore').listValue.map((e) => e.toString()).toList();
+      params = visitor.params;
+
       final className = visitor.className;
       final baseClassName = "Base$className";
-      final params = visitor.params;
       //final fields = visitor.fields;
       String idType = params['id'] != null ? params['id']!.type.toString() : 'void';
       idType = idType.replaceFirst('*', '');
@@ -48,22 +59,22 @@ class ModelGenerator extends GeneratorForAnnotation<Model> {
       template = template.replaceAll("{{baseClassName}}", baseClassName);
       template = template.replaceAll("{{className}}", className);
       template = template.replaceAll("{{idType}}", idType);
-      template = template.replaceAll("{{mixins}}", generateMixins(annotation));
+      template = template.replaceAll("{{mixins}}", generateMixins());
 
-      template = template.replaceAll("{{fields}}", generateFields(annotation, params));
-      template = template.replaceAll("{{constructorFields}}", generateConstructorFields(annotation, params));
+      template = template.replaceAll("{{fields}}", generateFields());
+      template = template.replaceAll("{{constructorFields}}", generateConstructorFields());
 
-      final fieldsLoad = generateFieldsLoad(annotation, params);
+      final fieldsLoad = generateFieldsLoad();
       final superConstructor = params.containsKey('id') ? "super(id: id)" : "super(id: null)";
 
       template = template.replaceAll("{{fieldsLoad}}", fieldsLoad);
       template = template.replaceAll("{{superConstructor}}", superConstructor);
 
-      template = template.replaceAll("{{getters}}", generateGetters(annotation, params));
-      template = template.replaceAll("{{setters}}", generateSetters(annotation, params));
+      template = template.replaceAll("{{getters}}", generateGetters());
+      template = template.replaceAll("{{setters}}", generateSetters());
 
-      template = template.replaceAll("{{toJson}}", generateToJson(annotation, params));
-      template = template.replaceAll("{{fromJson}}", generateFromJson(annotation, params));
+      template = template.replaceAll("{{toJson}}", generateToJson());
+      template = template.replaceAll("{{fromJson}}", generateFromJson());
 
       return template;
     } catch (e) {
@@ -72,12 +83,10 @@ class ModelGenerator extends GeneratorForAnnotation<Model> {
     }
   }
 
-  String generateMixins(ConstantReader annotation) {
+  String generateMixins() {
     final buffer = StringBuffer();
 
     List<String> _mixins = [];
-    final hasCreatedAt = annotation.read('createdAt').boolValue;
-    final hasUpdatedAt = annotation.read('updatedAt').boolValue;
     if (hasCreatedAt) _mixins.add('CreatedAt');
     if (hasUpdatedAt) _mixins.add('UpdatedAt');
     if (_mixins.isNotEmpty) {
@@ -91,10 +100,8 @@ class ModelGenerator extends GeneratorForAnnotation<Model> {
     return buffer.toString();
   }
 
-  String generateFields(ConstantReader annotation, Map<String, ParameterElement> params) {
+  String generateFields() {
     final buffer = StringBuffer();
-    final bool hasCreatedAt = annotation.read('createdAt').boolValue;
-    final bool hasUpdatedAt = annotation.read('updatedAt').boolValue;
     final overrides = [];
     if (hasCreatedAt) overrides.add("createdAt");
     if (hasUpdatedAt) overrides.add("updatedAt");
@@ -113,11 +120,9 @@ class ModelGenerator extends GeneratorForAnnotation<Model> {
     return buffer.toString();
   }
 
-  String generateConstructorFields(ConstantReader annotation, Map<String, ParameterElement> params) {
+  String generateConstructorFields() {
     if (params.isEmpty) return "";
     final buffer = StringBuffer();
-    final bool hasCreatedAt = annotation.read('createdAt').boolValue;
-    final bool hasUpdatedAt = annotation.read('updatedAt').boolValue;
     final directParams = [];
     if (hasCreatedAt) directParams.add("createdAt");
     if (hasUpdatedAt) directParams.add("updatedAt");
@@ -137,10 +142,8 @@ class ModelGenerator extends GeneratorForAnnotation<Model> {
     return buffer.toString();
   }
 
-  String generateFieldsLoad(ConstantReader annotation, Map<String, ParameterElement> params) {
+  String generateFieldsLoad() {
     final buffer = StringBuffer();
-    final bool hasCreatedAt = annotation.read('createdAt').boolValue;
-    final bool hasUpdatedAt = annotation.read('updatedAt').boolValue;
     final directParams = ['id'];
     if (hasCreatedAt) directParams.add("createdAt");
     if (hasUpdatedAt) directParams.add("updatedAt");
@@ -153,11 +156,8 @@ class ModelGenerator extends GeneratorForAnnotation<Model> {
     return buffer.toString();
   }
 
-  String generateGetters(ConstantReader annotation, Map<String, ParameterElement> params) {
+  String generateGetters() {
     final buffer = StringBuffer();
-    final hasCreatedAt = annotation.read('createdAt').boolValue;
-    final hasUpdatedAt = annotation.read('updatedAt').boolValue;
-
     for (final param in params.keys) {
       if (param == 'id') continue;
       if (param == 'createdAt' && hasCreatedAt) continue;
@@ -168,11 +168,8 @@ class ModelGenerator extends GeneratorForAnnotation<Model> {
     return buffer.toString();
   }
 
-  String generateSetters(ConstantReader annotation, Map<String, ParameterElement> params) {
+  String generateSetters() {
     final buffer = StringBuffer();
-    final hasCreatedAt = annotation.read('createdAt').boolValue;
-    final hasUpdatedAt = annotation.read('updatedAt').boolValue;
-
     for (final param in params.keys) {
       if (param == 'id') continue;
       if (param == 'createdAt' && hasCreatedAt) continue;
@@ -183,31 +180,25 @@ class ModelGenerator extends GeneratorForAnnotation<Model> {
     return buffer.toString();
   }
 
-  String generateToJson(ConstantReader annotation, Map<String, ParameterElement> params) {
+  String generateToJson() {
     final buffer = StringBuffer();
-    final List<String> jsonIgnore = annotation.read('jsonIgnore').listValue.map((e) => e.toString()).toList();
-    final bool hasCreatedAt = annotation.read('createdAt').boolValue;
-    final bool hasUpdatedAt = annotation.read('updatedAt').boolValue;
 
     for (final param in params.keys) {
       if (param == 'id') continue;
       if (param == 'createdAt' && hasCreatedAt) continue;
       if (param == 'updatedAt' && hasUpdatedAt) continue;
-      if (jsonIgnore.contains(param)) continue;
+      if (toJsonIgnore.contains(param)) continue;
       buffer.writeln("'$param': $param,");
     }
     return buffer.toString();
   }
 
-  String generateFromJson(ConstantReader annotation, Map<String, ParameterElement> params) {
+  String generateFromJson() {
     final buffer = StringBuffer();
-    final List<String> jsonIgnore = annotation.read('jsonIgnore').listValue.map((e) => e.toString()).toList();
-
     for (final param in params.keys) {
-      if (jsonIgnore.contains(param)) continue;
+      if (fromJsonIgnore.contains(param)) continue;
       buffer.write("$param: json['$param'],");
     }
-
     return buffer.toString();
   }
 }

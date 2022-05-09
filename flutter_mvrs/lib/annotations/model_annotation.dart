@@ -1,12 +1,14 @@
 class Model {
   final bool createdAt;
   final bool updatedAt;
-  final List<String> jsonIgnore;
+  final List<String> fromJsonIgnore;
+  final List<String> toJsonIgnore;
 
   const Model({
     this.createdAt = false,
     this.updatedAt = false,
-    this.jsonIgnore = const [],
+    this.fromJsonIgnore = const [],
+    this.toJsonIgnore = const [],
   });
 }
 
