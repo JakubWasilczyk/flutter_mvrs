@@ -1,8 +1,6 @@
-import 'package:flutter_mvrs/flutter_mvrs.dart';
-
 abstract class ModelRepository<T> {
-  Future<T?> get(String id, {Filters filters});
+  Future<T?> get(String id);
   Future<String> save(T model);
-  Future<List<T>> getList({Filters filters});
+  Future<List<T>> getList();
   Future<void> delete(T model);
 }
