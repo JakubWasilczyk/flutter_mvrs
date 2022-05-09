@@ -129,13 +129,16 @@ class ModelGenerator extends GeneratorForAnnotation<Model> {
 
     buffer.write("{");
     for (final param in params.keys) {
-      final required = params[param]!.isRequiredNamed ? 'required ' : '';
-      final paramType = params[param]!.type.toString().replaceFirst('*', '');
+      final value = params[param]!;
+      final required = value.isRequiredNamed ? 'required ' : '';
+      final paramType = value.type.toString().replaceFirst('*', '');
+      String defaultValue = value.defaultValueCode ?? "";
+      if (defaultValue.isNotEmpty) defaultValue = " = $defaultValue";
 
       if (directParams.contains(param)) {
-        buffer.writeln("${required}this.$param,");
+        buffer.writeln("${required}this.$param$defaultValue,");
       } else {
-        buffer.writeln("$required$paramType $param,");
+        buffer.writeln("$required$paramType $param$defaultValue,");
       }
     }
     buffer.write("}");

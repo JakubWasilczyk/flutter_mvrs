@@ -12,6 +12,7 @@ class Task extends BaseTask {
     String? id,
     required String title,
     required String subtitle,
+    bool isChecked = false,
     this.exists = false,
   }) : super(
           id: id,
