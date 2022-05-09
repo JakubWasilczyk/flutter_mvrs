@@ -52,6 +52,11 @@ class ModelGenerator extends GeneratorForAnnotation<Model> {
             (e, v) => MapEntry(e!.toStringValue()!, v!.toStringValue() ?? ""),
           );
       defaultValues.removeWhere((key, value) => key.isEmpty || value.isEmpty);
+      params.forEach((key, value) {
+        if (defaultValues.containsKey(key)) return;
+        if (!value.hasDefaultValue) return;
+        defaultValues[key] = value.defaultValueCode ?? "";
+      });
 
       params = visitor.params;
 
@@ -145,9 +150,8 @@ class ModelGenerator extends GeneratorForAnnotation<Model> {
         buffer.writeln("${required}this.$param,");
       } else {
         String paramType = value.type.toString().replaceFirst('*', '');
-        if (defaultValues.containsKey(param) || value.hasDefaultValue) {
-          paramType = paramType.replaceAll("?", "") + "?";
-        }
+        if (defaultValues.containsKey(param)) paramType = paramType.replaceAll("?", "") + "?";
+
         buffer.writeln("$required$paramType $param,");
       }
     }
@@ -163,14 +167,7 @@ class ModelGenerator extends GeneratorForAnnotation<Model> {
 
     for (final param in params.keys) {
       if (directParams.contains(param)) continue;
-      final value = params[param]!;
-
-      String defaultValue = "";
-      if (defaultValues.containsKey(param)) {
-        defaultValue = "${defaultValues[param]}";
-      } else if (value.hasDefaultValue) {
-        defaultValue = "${value.defaultValueCode}";
-      }
+      String defaultValue = defaultValues[param] ?? "";
       if (defaultValue.isNotEmpty) defaultValue = " ?? $defaultValue";
 
       buffer.writeln("_$param = $param$defaultValue,");
@@ -184,7 +181,8 @@ class ModelGenerator extends GeneratorForAnnotation<Model> {
       if (param == 'id') continue;
       if (param == 'createdAt' && hasCreatedAt) continue;
       if (param == 'updatedAt' && hasUpdatedAt) continue;
-      final paramType = params[param]!.type.toString().replaceFirst('*', '');
+      String paramType = params[param]!.type.toString().replaceFirst('*', '');
+      if (defaultValues.containsKey(param)) paramType = paramType.replaceAll("?", "");
       buffer.writeln("$paramType get $param => get('$param', _$param);");
     }
     return buffer.toString();
@@ -196,7 +194,8 @@ class ModelGenerator extends GeneratorForAnnotation<Model> {
       if (param == 'id') continue;
       if (param == 'createdAt' && hasCreatedAt) continue;
       if (param == 'updatedAt' && hasUpdatedAt) continue;
-      final paramType = params[param]!.type.toString().replaceFirst('*', '');
+      String paramType = params[param]!.type.toString().replaceFirst('*', '');
+      if (defaultValues.containsKey(param)) paramType = paramType.replaceAll("?", "");
       buffer.writeln("set $param($paramType value) => set('$param', value);");
     }
     return buffer.toString();
