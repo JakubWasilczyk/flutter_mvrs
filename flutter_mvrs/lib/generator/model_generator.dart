@@ -31,11 +31,11 @@ class ModelGenerator extends GeneratorForAnnotation<Model> {
       "\n"
       "}\n";
 
-  late final bool hasCreatedAt;
-  late final bool hasUpdatedAt;
-  late final List<String> fromJsonIgnore;
-  late final List<String> toJsonIgnore;
-  late final Map<String, ParameterElement> params;
+  bool hasCreatedAt = false;
+  bool hasUpdatedAt = false;
+  List<String> fromJsonIgnore = [];
+  List<String> toJsonIgnore = [];
+  Map<String, ParameterElement> params = {};
 
   @override
   generateForAnnotatedElement(Element element, ConstantReader annotation, BuildStep buildStep) {
