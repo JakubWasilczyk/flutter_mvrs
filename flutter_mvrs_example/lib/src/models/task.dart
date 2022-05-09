@@ -4,6 +4,9 @@ part 'base/task.base.dart';
 
 @Model(
   toJsonIgnore: ['id'],
+  toJsonAdditional: {
+    "title": ".toString()",
+  },
 )
 class Task extends BaseTask {
   final bool exists;

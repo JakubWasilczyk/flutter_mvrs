@@ -35,6 +35,8 @@ class ModelGenerator extends GeneratorForAnnotation<Model> {
   bool hasUpdatedAt = false;
   List<String> fromJsonIgnore = [];
   List<String> toJsonIgnore = [];
+  Map<String, String> fromJsonAdditional = {};
+  Map<String, String> toJsonAdditional = {};
   Map<String, ParameterElement> params = {};
 
   @override
@@ -47,6 +49,15 @@ class ModelGenerator extends GeneratorForAnnotation<Model> {
       hasUpdatedAt = annotation.read('updatedAt').boolValue;
       fromJsonIgnore = annotation.read('fromJsonIgnore').listValue.map((e) => e.toStringValue()!).toList();
       toJsonIgnore = annotation.read('toJsonIgnore').listValue.map((e) => e.toStringValue()!).toList();
+      /*fromJsonAdditional = annotation
+          .read('fromJsonAdditional')
+          .mapValue
+          .map((e, v) => MapEntry(e!.toStringValue()!, v!.toStringValue()!));*/
+      toJsonAdditional = annotation
+          .read('toJsonAdditional')
+          .mapValue
+          .map((e, v) => MapEntry(e!.toStringValue()!, v!.toStringValue()!));
+
       params = visitor.params;
 
       final className = visitor.className;
@@ -187,7 +198,8 @@ class ModelGenerator extends GeneratorForAnnotation<Model> {
     final buffer = StringBuffer();
     for (final param in params.keys) {
       if (toJsonIgnore.contains(param)) continue;
-      buffer.writeln("'$param': $param,");
+      final additional = toJsonAdditional[param] ?? "";
+      buffer.writeln("'$param': $param$additional,");
     }
     return buffer.toString();
   }

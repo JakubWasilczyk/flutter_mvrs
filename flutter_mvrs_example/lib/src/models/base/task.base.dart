@@ -32,7 +32,7 @@ class BaseTask extends BaseModel<String?> {
   set isChecked(bool value) => set('isChecked', value);
 
   Map<String, dynamic> toJson() => {
-        'title': title,
+        'title': title.toString(),
         'subtitle': subtitle,
         'isChecked': isChecked,
       };
