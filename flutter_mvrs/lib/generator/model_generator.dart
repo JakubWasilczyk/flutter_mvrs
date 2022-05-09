@@ -114,7 +114,10 @@ class ModelGenerator extends GeneratorForAnnotation<Model> {
 
     for (final param in params.keys) {
       if (param == 'id') continue;
-      final paramType = params[param]!.type.toString().replaceFirst('*', '');
+      String paramType = params[param]!.type.toString().replaceFirst('*', '');
+      if (defaultValues.containsKey(param)) {
+        paramType = paramType.replaceAll("?", "");
+      }
       if (overrides.contains(param)) {
         buffer.writeln("@override");
         buffer.writeln("final $paramType $param;");
@@ -137,14 +140,15 @@ class ModelGenerator extends GeneratorForAnnotation<Model> {
     for (final param in params.keys) {
       final value = params[param]!;
       final required = value.isRequiredNamed ? 'required ' : '';
-      final paramType = value.type.toString().replaceFirst('*', '');
-      String defaultValue = value.defaultValueCode ?? "";
-      if (defaultValue.isNotEmpty) defaultValue = " = $defaultValue";
 
       if (directParams.contains(param)) {
-        buffer.writeln("${required}this.$param$defaultValue,");
+        buffer.writeln("${required}this.$param,");
       } else {
-        buffer.writeln("$required$paramType $param$defaultValue,");
+        String paramType = value.type.toString().replaceFirst('*', '');
+        if (defaultValues.containsKey(param) || value.hasDefaultValue) {
+          paramType = paramType.replaceAll("?", "") + "?";
+        }
+        buffer.writeln("$required$paramType $param,");
       }
     }
     buffer.write("}");
@@ -159,11 +163,16 @@ class ModelGenerator extends GeneratorForAnnotation<Model> {
 
     for (final param in params.keys) {
       if (directParams.contains(param)) continue;
+      final value = params[param]!;
 
       String defaultValue = "";
       if (defaultValues.containsKey(param)) {
-        defaultValue = " ?? ${defaultValues[param]}";
+        defaultValue = "${defaultValues[param]}";
+      } else if (value.hasDefaultValue) {
+        defaultValue = "${value.defaultValueCode}";
       }
+      if (defaultValue.isNotEmpty) defaultValue = " ?? $defaultValue";
+
       buffer.writeln("_$param = $param$defaultValue,");
     }
     return buffer.toString();
