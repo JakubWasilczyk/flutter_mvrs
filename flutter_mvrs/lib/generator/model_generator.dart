@@ -31,11 +31,11 @@ class ModelGenerator extends GeneratorForAnnotation<Model> {
       "\n"
       "}\n";
 
-  bool hasCreatedAt = false;
-  bool hasUpdatedAt = false;
-  List<String> fromJsonIgnore = [];
-  List<String> toJsonIgnore = [];
-  Map<String, ParameterElement> params = {};
+  late final bool hasCreatedAt;
+  late final bool hasUpdatedAt;
+  late final List<String> fromJsonIgnore;
+  late final List<String> toJsonIgnore;
+  late final Map<String, ParameterElement> params;
 
   @override
   generateForAnnotatedElement(Element element, ConstantReader annotation, BuildStep buildStep) {
@@ -45,8 +45,8 @@ class ModelGenerator extends GeneratorForAnnotation<Model> {
 
       hasCreatedAt = annotation.read('createdAt').boolValue;
       hasUpdatedAt = annotation.read('updatedAt').boolValue;
-      fromJsonIgnore = annotation.read('fromJsonIgnore').listValue.map((e) => e.toString()).toList();
-      toJsonIgnore = annotation.read('toJsonIgnore').listValue.map((e) => e.toString()).toList();
+      fromJsonIgnore = annotation.read('fromJsonIgnore').listValue.map((e) => e.toStringValue()!).toList();
+      toJsonIgnore = annotation.read('toJsonIgnore').listValue.map((e) => e.toStringValue()!).toList();
       params = visitor.params;
 
       final className = visitor.className;
@@ -182,11 +182,7 @@ class ModelGenerator extends GeneratorForAnnotation<Model> {
 
   String generateToJson() {
     final buffer = StringBuffer();
-
     for (final param in params.keys) {
-      if (param == 'id') continue;
-      if (param == 'createdAt' && hasCreatedAt) continue;
-      if (param == 'updatedAt' && hasUpdatedAt) continue;
       if (toJsonIgnore.contains(param)) continue;
       buffer.writeln("'$param': $param,");
     }

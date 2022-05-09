@@ -32,6 +32,7 @@ class BaseTask extends BaseModel<String?> {
       };
 
   static Task fromJson(Map<String, dynamic> json) => Task(
+        id: json['id'],
         title: json['title'],
         subtitle: json['subtitle'],
       );

@@ -2,7 +2,9 @@ import 'package:flutter_mvrs/flutter_mvrs.dart';
 
 part 'base/task.base.dart';
 
-@Model()
+@Model(
+  toJsonIgnore: ['id'],
+)
 class Task extends BaseTask {
   final bool exists;
 
