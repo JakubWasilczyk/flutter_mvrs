@@ -15,22 +15,25 @@ abstract class CollectionProvider<T extends BaseModel> extends BaseFirestore<T> 
   }
 
   Future<List<T>> find(String field, String value, {String? parent, int? limit}) async {
-    var findQuery = collection(parent: parent).where(field, isEqualTo: value);
-    if (limit != null) findQuery = findQuery.limit(limit);
-    final find = await findQuery.get();
+    var coll = collection(parent: parent).where(field, isEqualTo: value);
+    if (limit != null) {
+      final find = await coll.limit(limit).get();
+      if (find.docs.isEmpty) return [];
+      return find.docs.map((e) => e.data()).toList();
+    }
+    final find = await coll.get();
     if (find.docs.isEmpty) return [];
     return find.docs.map((e) => e.data()).toList();
   }
 
   Future<List<T>> getList({String? parent, int? limit}) async {
-    dynamic query = collection(parent: parent);
-    if (limit != null) query = query.limit(limit);
-    final docs = await query.get().then((v) => v.docs);
-    final List<T> result = [];
-    for (final document in docs) {
-      result.add(document.data());
+    final coll = collection(parent: parent);
+    if (limit != null) {
+      final docs = await coll.limit(limit).get().then((v) => v.docs);
+      return docs.map((e) => e.data()).toList();
     }
-    return result;
+    final docs = await coll.get().then((v) => v.docs);
+    return docs.map((e) => e.data()).toList();
   }
 
   Future<String> _create(T model, {String? parent}) async {
@@ -57,14 +60,18 @@ abstract class CollectionProvider<T extends BaseModel> extends BaseFirestore<T> 
   Stream<T?> listen(String id, {String? parent}) => doc(id, parent: parent).snapshots().map((event) => event.data());
 
   Stream<List<T>> listenList({String? parent, int? limit}) {
-    dynamic query = collection(parent: parent);
-    if (limit != null) query = query.limit(limit);
-    return query.snapshots().map((e) => e.docs).map((list) => list.map((e) => e.data()).toList());
+    final coll = collection(parent: parent);
+    if (limit != null) {
+      return coll.limit(limit).snapshots().map((e) => e.docs).map((list) => list.map((e) => e.data()).toList());
+    }
+    return coll.snapshots().map((e) => e.docs).map((list) => list.map((e) => e.data()).toList());
   }
 
   Stream<List<T>> listenWhere(String field, String value, {String? parent, int? limit}) {
-    dynamic query = collection(parent: parent).where(field, isEqualTo: value);
-    if (limit != null) query = query.limit(limit);
-    return query.snapshots().map((e) => e.docs).map((list) => list.map((e) => e.data()).toList());
+    final coll = collection(parent: parent).where(field, isEqualTo: value);
+    if (limit != null) {
+      return coll.limit(limit).snapshots().map((e) => e.docs).map((list) => list.map((e) => e.data()).toList());
+    }
+    return coll.snapshots().map((e) => e.docs).map((list) => list.map((e) => e.data()).toList());
   }
 }
