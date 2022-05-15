@@ -14,14 +14,18 @@ abstract class CollectionProvider<T extends BaseModel> extends BaseFirestore<T> 
     return find.docs.first.data();
   }
 
-  Future<List<T>> find(String field, String value, {String? parent}) async {
-    final find = await collection().where(field, isEqualTo: value).get();
+  Future<List<T>> find(String field, String value, {String? parent, int? limit}) async {
+    var findQuery = collection(parent: parent).where(field, isEqualTo: value);
+    if (limit != null) findQuery = findQuery.limit(limit);
+    final find = await findQuery.get();
     if (find.docs.isEmpty) return [];
     return find.docs.map((e) => e.data()).toList();
   }
 
-  Future<List<T>> getList({String? parent}) async {
-    final docs = await collection().get().then((v) => v.docs);
+  Future<List<T>> getList({String? parent, int? limit}) async {
+    dynamic query = collection(parent: parent);
+    if (limit != null) query = query.limit(limit);
+    final docs = await query.get().then((v) => v.docs);
     final List<T> result = [];
     for (final document in docs) {
       result.add(document.data());
@@ -52,15 +56,15 @@ abstract class CollectionProvider<T extends BaseModel> extends BaseFirestore<T> 
 
   Stream<T?> listen(String id, {String? parent}) => doc(id, parent: parent).snapshots().map((event) => event.data());
 
-  Stream<List<T>> listenList({String? parent}) {
-    return collection(parent: parent).snapshots().map((e) => e.docs).map((list) => list.map((e) => e.data()).toList());
+  Stream<List<T>> listenList({String? parent, int? limit}) {
+    dynamic query = collection(parent: parent);
+    if (limit != null) query = query.limit(limit);
+    return query.snapshots().map((e) => e.docs).map((list) => list.map((e) => e.data()).toList());
   }
 
-  Stream<List<T>> listenWhere(String field, String value, {String? parent}) {
-    return collection()
-        .where(field, isEqualTo: value)
-        .snapshots()
-        .map((e) => e.docs)
-        .map((list) => list.map((e) => e.data()).toList());
+  Stream<List<T>> listenWhere(String field, String value, {String? parent, int? limit}) {
+    dynamic query = collection(parent: parent).where(field, isEqualTo: value);
+    if (limit != null) query = query.limit(limit);
+    return query.snapshots().map((e) => e.docs).map((list) => list.map((e) => e.data()).toList());
   }
 }
