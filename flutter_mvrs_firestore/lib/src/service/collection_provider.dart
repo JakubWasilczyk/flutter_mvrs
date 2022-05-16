@@ -15,24 +15,17 @@ abstract class CollectionProvider<T extends BaseModel> extends BaseFirestore<T> 
   }
 
   Future<List<T>> find(String field, String value, {String? parent, int? limit}) async {
-    var coll = collection(parent: parent).where(field, isEqualTo: value);
-    if (limit != null) {
-      final find = await coll.limit(limit).get();
-      if (find.docs.isEmpty) return [];
-      return find.docs.map((e) => e.data()).toList();
-    }
-    final find = await coll.get();
+    var query = collection(parent: parent).where(field, isEqualTo: value);
+    if (limit != null) query = query.limit(limit);
+    final find = await query.get();
     if (find.docs.isEmpty) return [];
     return find.docs.map((e) => e.data()).toList();
   }
 
   Future<List<T>> getList({String? parent, int? limit}) async {
     final coll = collection(parent: parent);
-    if (limit != null) {
-      final docs = await coll.limit(limit).get().then((v) => v.docs);
-      return docs.map((e) => e.data()).toList();
-    }
-    final docs = await coll.get().then((v) => v.docs);
+    final query = limit != null ? coll.limit(limit) : null;
+    final docs = await (query ?? coll).get().then((v) => v.docs);
     return docs.map((e) => e.data()).toList();
   }
 
@@ -61,17 +54,13 @@ abstract class CollectionProvider<T extends BaseModel> extends BaseFirestore<T> 
 
   Stream<List<T>> listenList({String? parent, int? limit}) {
     final coll = collection(parent: parent);
-    if (limit != null) {
-      return coll.limit(limit).snapshots().map((e) => e.docs).map((list) => list.map((e) => e.data()).toList());
-    }
-    return coll.snapshots().map((e) => e.docs).map((list) => list.map((e) => e.data()).toList());
+    final query = limit != null ? coll.limit(limit) : null;
+    return (query ?? coll).snapshots().map((e) => e.docs).map((list) => list.map((e) => e.data()).toList());
   }
 
   Stream<List<T>> listenWhere(String field, String value, {String? parent, int? limit}) {
     final coll = collection(parent: parent).where(field, isEqualTo: value);
-    if (limit != null) {
-      return coll.limit(limit).snapshots().map((e) => e.docs).map((list) => list.map((e) => e.data()).toList());
-    }
-    return coll.snapshots().map((e) => e.docs).map((list) => list.map((e) => e.data()).toList());
+    final query = limit != null ? coll.limit(limit) : null;
+    return (query ?? coll).snapshots().map((e) => e.docs).map((list) => list.map((e) => e.data()).toList());
   }
 }
