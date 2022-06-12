@@ -29,6 +29,8 @@ class ModelGenerator extends GeneratorForAnnotation<Model> {
       "   {{fromJson}}\n"
       ");\n"
       "\n"
+      "{{equatable}}"
+      "\n"
       "}\n";
 
   bool hasCreatedAt = false;
@@ -86,6 +88,8 @@ class ModelGenerator extends GeneratorForAnnotation<Model> {
 
       template = template.replaceAll("{{toJson}}", generateToJson());
       template = template.replaceAll("{{fromJson}}", generateFromJson());
+
+      template = template.replaceAll("{{equatable}}", generateEquatable());
 
       return template;
     } catch (e) {
@@ -216,6 +220,17 @@ class ModelGenerator extends GeneratorForAnnotation<Model> {
       if (fromJsonIgnore.contains(param)) continue;
       buffer.write("$param: json['$param'],");
     }
+    return buffer.toString();
+  }
+
+  String generateEquatable() {
+    final buffer = StringBuffer();
+    buffer.writeln("@override");
+    buffer.writeln("List<Object?> get props => [");
+    for (final param in params.keys) {
+      buffer.writeln("$param,");
+    }
+    buffer.writeln("];");
     return buffer.toString();
   }
 }

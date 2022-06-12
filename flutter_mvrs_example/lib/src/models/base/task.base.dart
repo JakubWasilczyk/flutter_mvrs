@@ -16,11 +16,11 @@ class BaseTask extends BaseModel<String?> {
     String? id,
     required String title,
     required String subtitle,
-    bool? isChecked,
+    bool isChecked,
     TestType? testType,
   })  : _title = title,
         _subtitle = subtitle,
-        _isChecked = isChecked ?? false,
+        _isChecked = isChecked,
         _testType = testType ?? const TestType("alias"),
         super(id: id);
 
@@ -28,13 +28,13 @@ class BaseTask extends BaseModel<String?> {
   String get title => get('title', _title);
   String get subtitle => get('subtitle', _subtitle);
   bool get isChecked => get('isChecked', _isChecked);
-  TestType? get testType => get('testType', _testType);
+  TestType get testType => get('testType', _testType);
 
   //SETTERS
   set title(String value) => set('title', value);
   set subtitle(String value) => set('subtitle', value);
   set isChecked(bool value) => set('isChecked', value);
-  set testType(TestType? value) => set('testType', value);
+  set testType(TestType value) => set('testType', value);
 
   Map<String, dynamic> toJson() => {
         'title': title,
@@ -50,4 +50,13 @@ class BaseTask extends BaseModel<String?> {
         isChecked: json['isChecked'],
         testType: json['testType'],
       );
+
+  @override
+  List<Object?> get props => [
+        id,
+        title,
+        subtitle,
+        isChecked,
+        testType,
+      ];
 }
