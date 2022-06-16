@@ -8,7 +8,8 @@ abstract class ChangeTracker {
   }
 
   dynamic get(String field, [dynamic orValue]) {
-    return changes[field] ?? orValue;
+    if (changes.containsKey(field)) return changes[field];
+    return orValue;
   }
 
   void reset() => changes.clear();
