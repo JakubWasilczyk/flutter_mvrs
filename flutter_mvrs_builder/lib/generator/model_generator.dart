@@ -129,8 +129,9 @@ class ModelGenerator extends GeneratorForAnnotation<Model> {
 
     for (final param in params.keys) {
       if (param == 'id') continue;
+      final value = params[param]!;
       String paramType = params[param]!.type.toString().replaceFirst('*', '');
-      if (defaultValues.containsKey(param)) {
+      if (defaultValues.containsKey(param) || defaultValueChecker.hasAnnotationOf(value)) {
         paramType = paramType.replaceAll("?", "");
       }
       if (overrides.contains(param)) {
@@ -160,9 +161,8 @@ class ModelGenerator extends GeneratorForAnnotation<Model> {
         buffer.writeln("${required}this.$param,");
       } else {
         String paramType = value.type.toString().replaceFirst('*', '');
-        final hasDefault = defaultValueChecker.hasAnnotationOf(value);
 
-        if (hasDefault) paramType = paramType.replaceAll("?", "") + "?";
+        if (defaultValueChecker.hasAnnotationOf(value)) paramType = paramType.replaceAll("?", "") + "?";
         if (defaultValues.containsKey(param)) paramType = paramType.replaceAll("?", "") + "?";
 
         buffer.writeln("$required$paramType $param,");
