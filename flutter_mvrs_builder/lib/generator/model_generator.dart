@@ -60,16 +60,13 @@ class ModelGenerator extends GeneratorForAnnotation<Model> {
             (e, v) => MapEntry(e!.toStringValue()!, v!.toStringValue() ?? ""),
           );
       defaultValues.removeWhere((key, value) => key.isEmpty || value.isEmpty);
+      params = visitor.params;
+
       params.forEach((key, value) {
-        print("key: $key");
-        print("value: $value");
-        print("defaultValueChecker.hasAnnotationOf(value): ${defaultValueChecker.hasAnnotationOf(value)}");
         if (defaultValueChecker.hasAnnotationOf(value)) {
           final defaultAnnotation = defaultValueChecker.firstAnnotationOf(value, throwOnUnresolved: false);
           final field = defaultAnnotation?.getField("declaration");
-          print("field: $field");
           final defaultValue = field?.toStringValue() ?? "";
-          print("defaultValue: $defaultValue");
           defaultValues[key] = defaultValue;
         }
         if (fromJsonIgnoreChecker.hasAnnotationOf(value)) {
@@ -88,8 +85,6 @@ class ModelGenerator extends GeneratorForAnnotation<Model> {
         if (!value.hasDefaultValue) return;
         defaultValues[key] = value.defaultValueCode ?? "";
       });
-
-      params = visitor.params;
 
       final className = visitor.className;
       final baseClassName = "Base$className";

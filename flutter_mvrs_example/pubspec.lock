@@ -207,7 +207,7 @@ packages:
     description:
       path: flutter_mvrs
       ref: HEAD
-      resolved-ref: b2f5d1e39c485a92b91092dd6aaf0704d8a34354
+      resolved-ref: b4a340bd04e5aff9009c167b6a940d47cca60bd9
       url: "git@github.com:JakubWasilczyk/flutter_mvrs.git"
     source: git
     version: "0.0.1"
