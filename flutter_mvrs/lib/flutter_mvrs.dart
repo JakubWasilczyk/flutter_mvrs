@@ -1,5 +1,7 @@
 library flutter_mvrs;
 
+export 'annotations/default_annotation.dart';
+export 'annotations/json_ignore_annotation.dart';
 export 'annotations/model_annotation.dart';
 export 'src/models/base_model.dart';
 export 'src/models/change_tracker.dart';

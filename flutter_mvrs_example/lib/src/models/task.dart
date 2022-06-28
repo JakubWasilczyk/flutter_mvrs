@@ -2,21 +2,16 @@ import 'package:flutter_mvrs/flutter_mvrs.dart';
 
 part 'base/task.base.dart';
 
-@Model(
-  toJsonIgnore: ['id'],
-  defaultValues: {
-    "testType": "const TestType(\"alias\")",
-  },
-)
+@Model()
 class Task extends BaseTask {
   final bool exists;
 
   Task({
-    String? id,
+    @toJsonIgnore String? id,
     required String title,
     required String subtitle,
-    bool isChecked = false,
-    TestType? testType,
+    @jsonIgnore @DefaultValue("false") bool isChecked = false,
+    @DefaultValue('const TestType("stoca")') TestType? testType,
     this.exists = false,
   }) : super(
           id: id,

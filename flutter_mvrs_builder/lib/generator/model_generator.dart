@@ -1,37 +1,38 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:build/build.dart';
-import 'package:flutter_mvrs/annotations/model_annotation.dart';
+import 'package:flutter_mvrs/flutter_mvrs.dart';
 import 'package:source_gen/source_gen.dart';
 
 import 'model_visitor.dart';
 
 class ModelGenerator extends GeneratorForAnnotation<Model> {
-  final String _template = "class {{baseClassName}} extends BaseModel<{{idType}}> {{mixins}} {\n"
-      "{{fields}}\n"
-      "\n"
-      "{{baseClassName}}(\n"
-      "   {{constructorFields}}\n"
-      ") : \n"
-      "   {{fieldsLoad}}\n"
-      "   {{superConstructor}};\n"
-      "\n"
-      " //GETTERS\n"
-      "{{getters}}\n"
-      "\n"
-      " //SETTERS\n"
-      "{{setters}}\n"
-      "\n"
-      "Map<String, dynamic> toJson() => {\n"
-      "   {{toJson}}\n"
-      "};\n"
-      "\n"
-      "static {{className}} fromJson(Map<String, dynamic> json) => {{className}}(\n"
-      "   {{fromJson}}\n"
-      ");\n"
-      "\n"
-      "{{equatable}}"
-      "\n"
-      "}\n";
+  final String _template = '''class {{baseClassName}} extends BaseModel<{{idType}}> {{mixins}} {
+      {{fields}}
+      
+      {{baseClassName}}(
+         {{constructorFields}}
+      ) : 
+         {{fieldsLoad}}
+         {{superConstructor}};
+      
+       //GETTERS
+      {{getters}}
+      
+       //SETTERS
+      {{setters}}
+      
+      Map<String, dynamic> toJson() => {
+         {{toJson}}
+      };
+      
+      static {{className}} fromJson(Map<String, dynamic> json) => {{className}}(
+         {{fromJson}}
+      );
+      
+      {{equatable}}
+      
+      }
+      ''';
 
   bool hasCreatedAt = false;
   bool hasUpdatedAt = false;
@@ -39,6 +40,11 @@ class ModelGenerator extends GeneratorForAnnotation<Model> {
   List<String> toJsonIgnore = [];
   Map<String, String> defaultValues = {};
   Map<String, ParameterElement> params = {};
+
+  static const jsonIgnoreChecker = TypeChecker.fromRuntime(JsonIgnore);
+  static const fromJsonIgnoreChecker = TypeChecker.fromRuntime(FromJsonIgnore);
+  static const toJsonIgnoreChecker = TypeChecker.fromRuntime(ToJsonIgnore);
+  static const defaultValueChecker = TypeChecker.fromRuntime(DefaultValue);
 
   @override
   generateForAnnotatedElement(Element element, ConstantReader annotation, BuildStep buildStep) {
@@ -154,6 +160,9 @@ class ModelGenerator extends GeneratorForAnnotation<Model> {
         buffer.writeln("${required}this.$param,");
       } else {
         String paramType = value.type.toString().replaceFirst('*', '');
+        final hasDefault = defaultValueChecker.hasAnnotationOf(value);
+
+        if (hasDefault) paramType = paramType.replaceAll("?", "") + "?";
         if (defaultValues.containsKey(param)) paramType = paramType.replaceAll("?", "") + "?";
 
         buffer.writeln("$required$paramType $param,");
@@ -170,8 +179,15 @@ class ModelGenerator extends GeneratorForAnnotation<Model> {
     if (hasUpdatedAt) directParams.add("updatedAt");
 
     for (final param in params.keys) {
+      final value = params[param]!;
       if (directParams.contains(param)) continue;
       String defaultValue = defaultValues[param] ?? "";
+
+      if (defaultValueChecker.hasAnnotationOf(value)) {
+        final defaultAnnotation = defaultValueChecker.firstAnnotationOf(value, throwOnUnresolved: false);
+        final field = defaultAnnotation?.getField("declaration");
+        defaultValue = field?.toStringValue() ?? defaultValue;
+      }
       if (defaultValue.isNotEmpty) defaultValue = " ?? $defaultValue";
 
       buffer.writeln("_$param = $param$defaultValue,");
@@ -208,6 +224,9 @@ class ModelGenerator extends GeneratorForAnnotation<Model> {
   String generateToJson() {
     final buffer = StringBuffer();
     for (final param in params.keys) {
+      final paramValue = params[param]!;
+      if (toJsonIgnoreChecker.hasAnnotationOf(paramValue)) continue;
+      if (jsonIgnoreChecker.hasAnnotationOf(paramValue)) continue;
       if (toJsonIgnore.contains(param)) continue;
       buffer.writeln("'$param': $param,");
     }
@@ -217,6 +236,9 @@ class ModelGenerator extends GeneratorForAnnotation<Model> {
   String generateFromJson() {
     final buffer = StringBuffer();
     for (final param in params.keys) {
+      final paramValue = params[param]!;
+      if (fromJsonIgnoreChecker.hasAnnotationOf(paramValue)) continue;
+      if (jsonIgnoreChecker.hasAnnotationOf(paramValue)) continue;
       if (fromJsonIgnore.contains(param)) continue;
       buffer.write("$param: json['$param'],");
     }
