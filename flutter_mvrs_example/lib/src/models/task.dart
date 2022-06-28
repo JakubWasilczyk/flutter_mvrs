@@ -8,7 +8,7 @@ class Task extends BaseTask {
 
   Task({
     @toJsonIgnore String? id,
-    required String title,
+    @DefaultValue('""') String? title,
     required String subtitle,
     @jsonIgnore @DefaultValue("false") bool isChecked = false,
     @DefaultValue('const TestType("stoca")') TestType? testType,

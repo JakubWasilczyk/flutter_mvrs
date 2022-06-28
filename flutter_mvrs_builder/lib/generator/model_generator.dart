@@ -61,11 +61,16 @@ class ModelGenerator extends GeneratorForAnnotation<Model> {
           );
       defaultValues.removeWhere((key, value) => key.isEmpty || value.isEmpty);
       params.forEach((key, value) {
+        print("key: $key");
+        print("value: $value");
+        print("defaultValueChecker.hasAnnotationOf(value): ${defaultValueChecker.hasAnnotationOf(value)}");
         if (defaultValueChecker.hasAnnotationOf(value)) {
           final defaultAnnotation = defaultValueChecker.firstAnnotationOf(value, throwOnUnresolved: false);
           final field = defaultAnnotation?.getField("declaration");
+          print("field: $field");
           final defaultValue = field?.toStringValue() ?? "";
-          if (defaultValue.isNotEmpty) defaultValues[key] = defaultValue;
+          print("defaultValue: $defaultValue");
+          defaultValues[key] = defaultValue;
         }
         if (fromJsonIgnoreChecker.hasAnnotationOf(value)) {
           if (!fromJsonIgnore.contains(key)) fromJsonIgnore.add(key);
@@ -147,11 +152,8 @@ class ModelGenerator extends GeneratorForAnnotation<Model> {
 
     for (final param in params.keys) {
       if (param == 'id') continue;
-      final value = params[param]!;
       String paramType = params[param]!.type.toString().replaceFirst('*', '');
-      if (defaultValues.containsKey(param)) {
-        paramType = paramType.replaceAll("?", "");
-      }
+      if (defaultValues.containsKey(param)) paramType = paramType.replaceAll("?", "");
       if (overrides.contains(param)) {
         buffer.writeln("@override");
         buffer.writeln("final $paramType $param;");
