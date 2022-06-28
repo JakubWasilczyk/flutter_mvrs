@@ -61,6 +61,24 @@ class ModelGenerator extends GeneratorForAnnotation<Model> {
           );
       defaultValues.removeWhere((key, value) => key.isEmpty || value.isEmpty);
       params.forEach((key, value) {
+        if (defaultValueChecker.hasAnnotationOf(value)) {
+          final defaultAnnotation = defaultValueChecker.firstAnnotationOf(value, throwOnUnresolved: false);
+          final field = defaultAnnotation?.getField("declaration");
+          final defaultValue = field?.toStringValue() ?? "";
+          if (defaultValue.isNotEmpty) defaultValues[key] = defaultValue;
+        }
+        if (fromJsonIgnoreChecker.hasAnnotationOf(value)) {
+          if (!fromJsonIgnore.contains(key)) fromJsonIgnore.add(key);
+        }
+        if (toJsonIgnoreChecker.hasAnnotationOf(value)) {
+          if (!toJsonIgnore.contains(key)) toJsonIgnore.add(key);
+        }
+        if (jsonIgnoreChecker.hasAnnotationOf(value)) {
+          if (!fromJsonIgnore.contains(key)) fromJsonIgnore.add(key);
+          if (!toJsonIgnore.contains(key)) toJsonIgnore.add(key);
+        }
+      });
+      params.forEach((key, value) {
         if (defaultValues.containsKey(key)) return;
         if (!value.hasDefaultValue) return;
         defaultValues[key] = value.defaultValueCode ?? "";
@@ -131,7 +149,7 @@ class ModelGenerator extends GeneratorForAnnotation<Model> {
       if (param == 'id') continue;
       final value = params[param]!;
       String paramType = params[param]!.type.toString().replaceFirst('*', '');
-      if (defaultValues.containsKey(param) || defaultValueChecker.hasAnnotationOf(value)) {
+      if (defaultValues.containsKey(param)) {
         paramType = paramType.replaceAll("?", "");
       }
       if (overrides.contains(param)) {
@@ -162,7 +180,6 @@ class ModelGenerator extends GeneratorForAnnotation<Model> {
       } else {
         String paramType = value.type.toString().replaceFirst('*', '');
 
-        if (defaultValueChecker.hasAnnotationOf(value)) paramType = paramType.replaceAll("?", "") + "?";
         if (defaultValues.containsKey(param)) paramType = paramType.replaceAll("?", "") + "?";
 
         buffer.writeln("$required$paramType $param,");
@@ -182,12 +199,6 @@ class ModelGenerator extends GeneratorForAnnotation<Model> {
       final value = params[param]!;
       if (directParams.contains(param)) continue;
       String defaultValue = defaultValues[param] ?? "";
-
-      if (defaultValueChecker.hasAnnotationOf(value)) {
-        final defaultAnnotation = defaultValueChecker.firstAnnotationOf(value, throwOnUnresolved: false);
-        final field = defaultAnnotation?.getField("declaration");
-        defaultValue = field?.toStringValue() ?? defaultValue;
-      }
       if (defaultValue.isNotEmpty) defaultValue = " ?? $defaultValue";
 
       buffer.writeln("_$param = $param$defaultValue,");
@@ -203,7 +214,6 @@ class ModelGenerator extends GeneratorForAnnotation<Model> {
       if (param == 'updatedAt' && hasUpdatedAt) continue;
       final value = params[param]!;
       String paramType = params[param]!.type.toString().replaceFirst('*', '');
-      if (defaultValueChecker.hasAnnotationOf(value)) paramType = paramType.replaceAll("?", "");
       if (defaultValues.containsKey(param)) paramType = paramType.replaceAll("?", "");
       buffer.writeln("$paramType get $param => get('$param', _$param);");
     }
@@ -218,7 +228,6 @@ class ModelGenerator extends GeneratorForAnnotation<Model> {
       if (param == 'updatedAt' && hasUpdatedAt) continue;
       final value = params[param]!;
       String paramType = params[param]!.type.toString().replaceFirst('*', '');
-      if (defaultValueChecker.hasAnnotationOf(value)) paramType = paramType.replaceAll("?", "");
       if (defaultValues.containsKey(param)) paramType = paramType.replaceAll("?", "");
       buffer.writeln("set $param($paramType value) => set('$param', value);");
     }
@@ -228,9 +237,6 @@ class ModelGenerator extends GeneratorForAnnotation<Model> {
   String generateToJson() {
     final buffer = StringBuffer();
     for (final param in params.keys) {
-      final paramValue = params[param]!;
-      if (toJsonIgnoreChecker.hasAnnotationOf(paramValue)) continue;
-      if (jsonIgnoreChecker.hasAnnotationOf(paramValue)) continue;
       if (toJsonIgnore.contains(param)) continue;
       buffer.writeln("'$param': $param,");
     }
@@ -240,9 +246,6 @@ class ModelGenerator extends GeneratorForAnnotation<Model> {
   String generateFromJson() {
     final buffer = StringBuffer();
     for (final param in params.keys) {
-      final paramValue = params[param]!;
-      if (fromJsonIgnoreChecker.hasAnnotationOf(paramValue)) continue;
-      if (jsonIgnoreChecker.hasAnnotationOf(paramValue)) continue;
       if (fromJsonIgnore.contains(param)) continue;
       buffer.write("$param: json['$param'],");
     }
