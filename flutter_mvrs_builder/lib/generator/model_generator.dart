@@ -201,7 +201,9 @@ class ModelGenerator extends GeneratorForAnnotation<Model> {
       if (param == 'id') continue;
       if (param == 'createdAt' && hasCreatedAt) continue;
       if (param == 'updatedAt' && hasUpdatedAt) continue;
+      final value = params[param]!;
       String paramType = params[param]!.type.toString().replaceFirst('*', '');
+      if (defaultValueChecker.hasAnnotationOf(value)) paramType = paramType.replaceAll("?", "");
       if (defaultValues.containsKey(param)) paramType = paramType.replaceAll("?", "");
       buffer.writeln("$paramType get $param => get('$param', _$param);");
     }
@@ -214,7 +216,9 @@ class ModelGenerator extends GeneratorForAnnotation<Model> {
       if (param == 'id') continue;
       if (param == 'createdAt' && hasCreatedAt) continue;
       if (param == 'updatedAt' && hasUpdatedAt) continue;
+      final value = params[param]!;
       String paramType = params[param]!.type.toString().replaceFirst('*', '');
+      if (defaultValueChecker.hasAnnotationOf(value)) paramType = paramType.replaceAll("?", "");
       if (defaultValues.containsKey(param)) paramType = paramType.replaceAll("?", "");
       buffer.writeln("set $param($paramType value) => set('$param', value);");
     }
