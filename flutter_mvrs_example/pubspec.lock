@@ -205,7 +205,16 @@ packages:
   flutter_mvrs:
     dependency: "direct main"
     description:
-      path: "../flutter_mvrs"
+      path: flutter_mvrs
+      ref: HEAD
+      resolved-ref: "668c8d84ba1d128aaba46780c88fcb45076309b5"
+      url: "git@github.com:JakubWasilczyk/flutter_mvrs.git"
+    source: git
+    version: "0.0.1"
+  flutter_mvrs_builder:
+    dependency: "direct dev"
+    description:
+      path: "../flutter_mvrs_builder"
       relative: true
     source: path
     version: "0.0.1"
