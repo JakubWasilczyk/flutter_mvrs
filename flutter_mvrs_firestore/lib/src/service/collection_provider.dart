@@ -15,8 +15,9 @@ abstract class CollectionProvider<T extends BaseModel> extends BaseFirestore<T> 
   }
 
   Future<List<T>> find(String field, String value, {String? parent, int? limit}) async {
-    var query = collection(parent: parent).where(field, isEqualTo: value);
+    Query<T> query = collection(parent: parent).where(field, isEqualTo: value);
     if (limit != null) query = query.limit(limit);
+    if (hasOrderBy) query = query.orderBy(orderBy!, descending: orderByDescending);
     final find = await query.get();
     if (find.docs.isEmpty) return [];
     return find.docs.map((e) => e.data()).toList();
@@ -24,7 +25,8 @@ abstract class CollectionProvider<T extends BaseModel> extends BaseFirestore<T> 
 
   Future<List<T>> getList({String? parent, int? limit}) async {
     final coll = collection(parent: parent);
-    final query = limit != null ? coll.limit(limit) : null;
+    Query<T>? query = limit != null ? coll.limit(limit) : null;
+    if (hasOrderBy) query = (query ?? coll).orderBy(orderBy!, descending: orderByDescending);
     final docs = await (query ?? coll).get().then((v) => v.docs);
     return docs.map((e) => e.data()).toList();
   }
@@ -54,13 +56,15 @@ abstract class CollectionProvider<T extends BaseModel> extends BaseFirestore<T> 
 
   Stream<List<T>> listenList({String? parent, int? limit}) {
     final coll = collection(parent: parent);
-    final query = limit != null ? coll.limit(limit) : null;
+    Query<T>? query = limit != null ? coll.limit(limit) : null;
+    if (hasOrderBy) query = (query ?? coll).orderBy(orderBy!, descending: orderByDescending);
     return (query ?? coll).snapshots().map((e) => e.docs).map((list) => list.map((e) => e.data()).toList());
   }
 
   Stream<List<T>> listenWhere(String field, String value, {String? parent, int? limit}) {
     final coll = collection(parent: parent).where(field, isEqualTo: value);
-    final query = limit != null ? coll.limit(limit) : null;
+    Query<T>? query = limit != null ? coll.limit(limit) : null;
+    if (hasOrderBy) query = (query ?? coll).orderBy(orderBy!, descending: orderByDescending);
     return (query ?? coll).snapshots().map((e) => e.docs).map((list) => list.map((e) => e.data()).toList());
   }
 }

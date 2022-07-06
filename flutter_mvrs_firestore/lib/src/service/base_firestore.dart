@@ -10,6 +10,10 @@ abstract class BaseFirestore<T> {
   T fromJson(Map<String, dynamic> json);
   Map<String, dynamic> toJson(T model);
 
+  bool get hasOrderBy => orderBy != null;
+  String? get orderBy => null;
+  bool get orderByDescending => false;
+
   T fromFirestore(DocumentSnapshot<Map<String, dynamic>> snapshot, SnapshotOptions? options) {
     Map<String, dynamic> json = snapshot.data() as Map<String, dynamic>;
     json['id'] = snapshot.id;
