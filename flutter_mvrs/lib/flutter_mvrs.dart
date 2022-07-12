@@ -13,4 +13,3 @@ export 'src/repository/model_repository.dart';
 export 'src/repository/model_set_repository.dart';
 export 'src/service/base_service.dart';
 export 'src/service/filters/filter.dart';
-export 'src/service/filters/filters.dart';
