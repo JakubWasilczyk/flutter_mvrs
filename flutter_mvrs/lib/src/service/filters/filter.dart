@@ -1,19 +1,19 @@
-abstract class Filter {}
+abstract class BaseFilter {}
 
-abstract class Where implements Filter {
+abstract class BaseWhere implements BaseFilter {
   final Object field;
   final dynamic value;
 
-  Where(this.field, {this.value});
+  BaseWhere(this.field, {this.value});
 }
 
 enum OrderByDirection { ascending, descending }
 
-abstract class OrderBy implements Filter {
+abstract class BaseOrderBy implements BaseFilter {
   final Object field;
   final OrderByDirection direction;
 
-  OrderBy(this.field, this.direction);
+  BaseOrderBy(this.field, this.direction);
 
   bool get isDescending => direction == OrderByDirection.descending;
   bool get isAscending => direction == OrderByDirection.ascending;
