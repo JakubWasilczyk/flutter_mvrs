@@ -7,7 +7,7 @@ import 'filters/filter.dart';
 abstract class CollectionProvider<T extends BaseModel> extends BaseCollectionProvider<T> {
   CollectionProvider(FirebaseFirestore firestore) : super(firestore);
 
-  Future<T?> get(String id) => super.baseGet(id);
+  Future<T?> get(String id) => super.baseGet("", id);
 
   Future<T?> getWhere(List<Filter>? filters) => super.baseGetWhere("", filters);
 

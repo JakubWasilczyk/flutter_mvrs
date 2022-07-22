@@ -28,7 +28,7 @@ abstract class BaseCollectionProvider<T extends BaseModel> extends BaseFirestore
     return query;
   }
 
-  Future<T?> baseGet(String id, [String parent = ""]) => doc(id, parent).get().then((v) => v.data());
+  Future<T?> baseGet(String parent, String id) => doc(id, parent).get().then((v) => v.data());
 
   Future<T?> baseGetWhere(String parent, List<Filter>? filters) async {
     Query<T> query = collection(parent);

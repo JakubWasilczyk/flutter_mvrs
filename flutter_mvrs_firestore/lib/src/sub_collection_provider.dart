@@ -4,22 +4,26 @@ import 'package:flutter_mvrs_firestore/src/base_collection_provider.dart';
 
 import 'filters/filter.dart';
 
-abstract class SubCollectionProvider<T extends BaseModel> extends BaseCollectionProvider<T> {
+abstract class SubCollectionProvider<T extends BaseModel, P> extends BaseCollectionProvider<T> {
   SubCollectionProvider(FirebaseFirestore firestore) : super(firestore);
 
-  Future<T?> get(String parent, String id) => super.baseGet(parent, id);
+  String getParentPath(P parent) => parent.toString();
 
-  Future<T?> getWhere(String parent, List<Filter>? filters) => super.baseGetWhere(parent, filters);
+  Future<T?> get(P parent, String id) => super.baseGet(getParentPath(parent), id);
 
-  Future<List<T>> getList(String parent, {List<Filter>? filters}) => super.baseGetList(parent, filters: filters);
+  Future<T?> getWhere(P parent, List<Filter>? filters) => super.baseGetWhere(getParentPath(parent), filters);
 
-  Future<String> save(String parent, T model) => super.baseSave(parent, model);
+  Future<List<T>> getList(P parent, {List<Filter>? filters}) =>
+      super.baseGetList(getParentPath(parent), filters: filters);
 
-  Future<void> delete(String parent, T model) => super.baseDelete(parent, model);
+  Future<String> save(P parent, T model) => super.baseSave(getParentPath(parent), model);
 
-  Stream<T?> listen(String parent, String id) => super.baseListen(parent, id);
+  Future<void> delete(P parent, T model) => super.baseDelete(getParentPath(parent), model);
 
-  Stream<T?> listenWhere(String parent, List<Filter>? filters) => super.baseListenWhere(parent, filters);
+  Stream<T?> listen(P parent, String id) => super.baseListen(getParentPath(parent), id);
 
-  Stream<List<T>> listenList(String parent, {List<Filter>? filters}) => super.baseListenList(parent, filters: filters);
+  Stream<T?> listenWhere(P parent, List<Filter>? filters) => super.baseListenWhere(getParentPath(parent), filters);
+
+  Stream<List<T>> listenList(P parent, {List<Filter>? filters}) =>
+      super.baseListenList(getParentPath(parent), filters: filters);
 }
