@@ -4,6 +4,6 @@ abstract class ModelSetRepository<T> {
 }
 
 abstract class ModelSetParamRepository<T, P> {
-  Future<String> save(T model, P params);
-  Future<void> delete(T model, P params);
+  Future<String> save(T model, P param);
+  Future<void> delete(T model, P param);
 }

@@ -4,6 +4,6 @@ abstract class ListenableRepository<T> {
 }
 
 abstract class ListenableParamRepository<T, P> {
-  Stream<T?> listen(String id, P params);
-  Stream<List<T>> listenList(P params, {int? limit});
+  Stream<T?> listen(String id, P param);
+  Stream<List<T>> listenList(P param, {int? limit});
 }

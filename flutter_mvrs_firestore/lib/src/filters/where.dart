@@ -1,8 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_mvrs/flutter_mvrs.dart';
 
 import 'filter.dart';
-
-enum OrderByDirection { ascending, descending }
 
 class Limit implements Filter {
   final int limit;

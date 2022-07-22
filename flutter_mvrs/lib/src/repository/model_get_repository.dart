@@ -4,6 +4,6 @@ abstract class ModelGetRepository<T> {
 }
 
 abstract class ModelGetParamRepository<T, P> {
-  Future<T?> get(String id, P params);
-  Future<List<T>> getList(P params, {int? limit});
+  Future<T?> get(String id, P param);
+  Future<List<T>> getList(P param, {int? limit});
 }

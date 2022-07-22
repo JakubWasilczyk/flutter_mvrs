@@ -12,7 +12,7 @@ abstract class BaseFirestore<T> {
 
   bool get hasOrderBy => orderBy != null;
   String? get orderBy => null;
-  bool get orderByDescending => false;
+  OrderByDirection get orderByDirection => OrderByDirection.ascending;
 
   T fromFirestore(DocumentSnapshot<Map<String, dynamic>> snapshot, SnapshotOptions? options) {
     Map<String, dynamic> json = snapshot.data() as Map<String, dynamic>;
@@ -47,14 +47,13 @@ abstract class BaseFirestore<T> {
   String sanitizePath(String path) {
     if (path.startsWith('/')) path = path.substring(1);
     if (path.endsWith('/')) path = path.substring(0, path.length - 1);
-    return path.replaceAll('//', '/');
+    return path;
   }
 
-  CollectionReference<T> collection({String? parent}) {
-    parent = parent != null ? sanitizePath(parent) + '/' : '';
-    final path = parent + collectionName;
+  CollectionReference<T> collection([String parent = ""]) {
+    final path = sanitizePath(parent + '/' + collectionName);
     return firestore.collection(path).withConverter(fromFirestore: fromFirestore, toFirestore: toFirestore);
   }
 
-  DocumentReference<T> doc(String id, {String? parent}) => collection(parent: parent).doc(id);
+  DocumentReference<T> doc(String id, [String parent = ""]) => collection(parent).doc(id);
 }
