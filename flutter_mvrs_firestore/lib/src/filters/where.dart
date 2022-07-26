@@ -3,7 +3,7 @@ import 'package:flutter_mvrs/flutter_mvrs.dart';
 
 import 'filter.dart';
 
-class Limit implements Filter {
+class Limit extends Filter {
   final int limit;
   Limit(this.limit);
 
@@ -11,7 +11,7 @@ class Limit implements Filter {
   Query<T> apply<T>(Query<T> query) => query.limit(limit);
 }
 
-class LimitLast implements Filter {
+class LimitLast extends Filter {
   final int limit;
   LimitLast(this.limit);
 
@@ -19,7 +19,7 @@ class LimitLast implements Filter {
   Query<T> apply<T>(Query<T> query) => query.limitToLast(limit);
 }
 
-class OrderBy implements Filter {
+class OrderBy extends Filter {
   final Object field;
   final OrderByDirection direction;
 

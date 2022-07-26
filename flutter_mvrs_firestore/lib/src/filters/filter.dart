@@ -3,11 +3,18 @@ import 'package:flutter_mvrs/flutter_mvrs.dart';
 
 abstract class Filter implements BaseFilter {
   Query<T> apply<T>(Query<T> query);
+
+  dynamic convert(dynamic value) {
+    if (value is DateTime) return Timestamp.fromDate(value);
+    return value;
+  }
 }
 
-abstract class Where implements Filter {
+abstract class Where extends Filter {
   final Object field;
-  final dynamic value;
+  final dynamic _value;
 
-  Where(this.field, {this.value});
+  dynamic get value => convert(_value);
+
+  Where(this.field, {dynamic value}) : _value = value;
 }
