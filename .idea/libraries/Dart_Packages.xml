@@ -286,6 +286,7 @@
             <list>
               <option value="$PROJECT_DIR$/../flutter/.pub-cache/git/flutter_mvrs-157fccebb3445ce17f0ef440aba48b0c08151c94/flutter_mvrs/lib" />
               <option value="$PROJECT_DIR$/../flutter/.pub-cache/git/flutter_mvrs-b4a340bd04e5aff9009c167b6a940d47cca60bd9/flutter_mvrs/lib" />
+              <option value="$PROJECT_DIR$/../flutter/.pub-cache/git/flutter_mvrs-01e1e9c4ef0c3edafa0c59a7395ad84c2985ec96/flutter_mvrs/lib" />
             </list>
           </value>
         </entry>
@@ -667,6 +668,7 @@
       </option>
     </properties>
     <CLASSES>
+      <root url="file://$PROJECT_DIR$/../flutter/.pub-cache/git/flutter_mvrs-01e1e9c4ef0c3edafa0c59a7395ad84c2985ec96/flutter_mvrs/lib" />
       <root url="file://$PROJECT_DIR$/../flutter/.pub-cache/git/flutter_mvrs-157fccebb3445ce17f0ef440aba48b0c08151c94/flutter_mvrs/lib" />
       <root url="file://$PROJECT_DIR$/../flutter/.pub-cache/git/flutter_mvrs-b4a340bd04e5aff9009c167b6a940d47cca60bd9/flutter_mvrs/lib" />
       <root url="file://$PROJECT_DIR$/../flutter/.pub-cache/hosted/pub.dartlang.org/_fe_analyzer_shared-40.0.0/lib" />
