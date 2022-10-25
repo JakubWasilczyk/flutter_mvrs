@@ -11,4 +11,12 @@ class DataError<T> implements DataState<T> {
   final StackTrace? stackTrace;
 
   DataError(this.message, [this.stackTrace]);
+
+  static Future<DataError<T>> future<T>(String message, [StackTrace? stackTrace]) {
+    return Future.value(DataError(message, stackTrace));
+  }
+
+  static Stream<DataError<T>> stream<T>(String message, [StackTrace? stackTrace]) {
+    return Stream.value(DataError(message, stackTrace));
+  }
 }
