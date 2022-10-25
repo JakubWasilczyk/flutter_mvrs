@@ -2,12 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_mvrs/flutter_mvrs.dart';
 import 'package:flutter_mvrs_firestore/flutter_mvrs_firestore.dart';
 
-abstract class ListenableServiceRepository<T extends BaseModel> extends ListenableRepository<T> {
-  final CollectionProvider<T> service;
-
-  ListenableServiceRepository(this.service);
-
-  @override
+mixin ModelListenServiceRepository<T extends BaseModel> on ServiceRepository<T> {
   Stream<DataState<T?>> listen(String id) {
     try {
       return service.listen(id).map((r) => DataSuccess(r));
@@ -18,7 +13,6 @@ abstract class ListenableServiceRepository<T extends BaseModel> extends Listenab
     }
   }
 
-  @override
   Stream<DataState<List<T>>> listenList() {
     try {
       return service.listenList().map((r) => DataSuccess(r));
@@ -30,12 +24,7 @@ abstract class ListenableServiceRepository<T extends BaseModel> extends Listenab
   }
 }
 
-abstract class ListenableParamServiceRepository<T extends BaseModel, P> extends ListenableParamRepository<T, P> {
-  final SubCollectionProvider<T, P> service;
-
-  ListenableParamServiceRepository(this.service);
-
-  @override
+mixin ModelListenParamServiceRepository<T extends BaseModel, P> on ServiceParamRepository<T, P> {
   Stream<DataState<T?>> listen(String id, P param) {
     try {
       return service.listen(param, id).map((r) => DataSuccess(r));
@@ -46,7 +35,6 @@ abstract class ListenableParamServiceRepository<T extends BaseModel, P> extends 
     }
   }
 
-  @override
   Stream<DataState<List<T>>> listenList(P param) {
     try {
       return service.listenList(param).map((r) => DataSuccess(r));
